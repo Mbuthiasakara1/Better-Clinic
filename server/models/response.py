@@ -1,14 +1,14 @@
-from ..config import db
+from models import db
 from datetime import datetime
 
 class Response(db.Model):
     __tablename__="responses"
 
     id=db.Column(db.Integer,primary_key=True)
-    session_id=db.Column(db.Integer,db.Foreignkey("sessions.id"),nullable=False)
-    question_id=db.Column(db.Integer,db.Foreignkey("questions.id"),nullable=False)
+    session_id = db.Column(db.Integer, db.ForeignKey("sessions.id"), nullable=False)
+    question_id = db.Column(db.Integer, db.ForeignKey("questions.id"), nullable=False)
     response_value=db.Column(db.Text,nullable=False)
-    created_at=db.Column(db.Datetime,default=datetime.utcnow)
+    created_at=db.Column(db.DateTime,default=datetime.utcnow)
     
 
     #relationship
@@ -26,10 +26,3 @@ class Response(db.Model):
             "question_id":self.question_id,
             "response_value":self.response_value
         }
-    
-
-     
-     
-
-
-    

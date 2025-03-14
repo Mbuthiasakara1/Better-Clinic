@@ -1,6 +1,5 @@
-from ..config import db
-
-
+from models import db
+import json
 
 class Question (db.Model):
     __tablename__ ="questions"
@@ -9,7 +8,7 @@ class Question (db.Model):
     question_text=db.Column(db.Text,nullable=False)
     category=db.Column(db.String(100),nullable=False)
     question_type=db.Column(db.String(20),nullable=False)
-    options=db.Column(db.Column(db.Text,nullable=True))
+    options = db.Column(db.String, nullable=True)
     weight=db.Column(db.Float,default=1.0)
     created_at = db.Column(db.DateTime,default=db.func.current_timestamp())
 
@@ -20,14 +19,23 @@ class Question (db.Model):
         return f"<Question{self.question_text},Category{self.category}>"
     
     def to_dict(self):
-        return{
-            "id":self.id,
-            "question_text":self.question_text,
-            "category":self.category,
-            "question_type":self.question_type,
-            "options":self.options,
-            "weight":self.weight,
-            "created_at":self.created_at.isoformat()
-        }
-    
-   
+        try:
+            return {
+                "id": self.id,
+                "question_text": self.question_text,
+                "category": self.category,
+                "question_type": self.question_type,
+                "options": json.loads(self.options) if self.options and self.options.strip() else [],
+                "weight": self.weight,
+                "created_at": self.created_at.isoformat(),
+            }
+        except json.JSONDecodeError:
+            return {
+                "id": self.id,
+                "question_text": self.question_text,
+                "category": self.category,
+                "question_type": self.question_type,
+                "options": [],  
+                "weight": self.weight,
+                "created_at": self.created_at.isoformat(),
+            }

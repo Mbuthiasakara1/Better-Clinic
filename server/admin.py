@@ -1,5 +1,4 @@
-from ..config import db
-
+from server.models import db
 class Admin(db.Model):
     __tablename__='admins'
 

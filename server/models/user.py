@@ -1,4 +1,4 @@
-from ..config import db
+from models import db
 
 class User(db.Model):
     __tablename__ ="users"
@@ -8,6 +8,7 @@ class User(db.Model):
     last_name=db.Column(db.String(50),nullable=False)  
     email=db.Column(db.String(50),unique=True, nullable=False)
     gender =db.Column(db.String(20),nullable=False)
+    age_group =db.Column(db.String(20),nullable=False)
     mobile_number=db.Column(db.Integer,nullable=False,unique=True)
     created_at = db.Column(db.DateTime,default=db.func.current_timestamp())
 
@@ -26,6 +27,8 @@ class User(db.Model):
             "email":self.email,
             "gender":self.gender,
             "mobile_number":self.mobile_number,
+            "age_group":self.age_group,
+            "sessions": [session.to_dict() for session in self.sessions],  
             "created_at":self.created_at.isoformat() if self.created_at else None,
         }
 

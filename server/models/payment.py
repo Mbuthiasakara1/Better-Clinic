@@ -1,4 +1,4 @@
-from ..config import db
+from models import db
 from datetime import datetime 
 
 class Payment(db.Model):
@@ -14,7 +14,8 @@ class Payment(db.Model):
     created_at=db.Column(db.DateTime,default=datetime.utcnow)#timestamp for when the record was created
     
     #relationship
-    session=db.relationship('Session',back_populates='payment')
+    session = db.relationship('Session', back_populates='payment')
+
 
 
     def mark_as_successful(self, transaction_id):

@@ -1,10 +1,10 @@
-from ..config import db
+from models import db
 from datetime import datetime
 class Session(db.Model):
     __tablename__="sessions"
 
     id=db.Column(db.Integer,primary_key=True)
-    user_id=db.Column(db.Integer,db.ForeignKey('user.id'),nullable=False)
+    user_id=db.Column(db.Integer,db.ForeignKey('users.id'),nullable=False)
     score=db.Column(db.Float,nullable=True)
     paid=db.Column(db.Boolean,default=False)
     result_sent=db.Column(db.Boolean,default=False)
@@ -13,7 +13,10 @@ class Session(db.Model):
 
     #relationship
     user=db.relationship('User',back_populates='sessions')
-    payment=db.relationship('Payment',back_populates=' session')
+    payment = db.relationship('Payment', back_populates='session')
+    responses = db.relationship('Response', back_populates='session', cascade='all, delete-orphan')
+
+
 
 
     def to_dict(self):
