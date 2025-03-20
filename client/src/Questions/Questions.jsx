@@ -7,13 +7,17 @@ function Questions() {
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const navigate = useNavigate();
+  const [loading,setLoading] =useState(true)
 
   // Fetch questions from API
   useEffect(() => {
+    setLoading(true)
     axios
-      .get("http://127.0.0.1:5000/api/questions")
-      .then((resp) => setQuestions(resp.data))
+      .get("http://localhost:5000/api/questions")
+      .then((resp) =>setQuestions(resp.data)
+      )
       .catch((error) => console.error("Error fetching questions:", error));
+      setLoading(false)
   }, []);
 
   const handleoptionClick = () => {
@@ -27,10 +31,12 @@ function Questions() {
   };
 
   return (
+    <>
+    
     <div className="relative w-screen h-screen flex items-center justify-center px-4 md:px-10 lg:px-20 text-gray-900 dark:text-white">
       <img
         className="absolute w-full h-full object-cover opacity-100"
-        src="assets/Flux_Dev_pls_generate_a_image_my_mental_health_app_for_the_bg__3.jpeg"
+        src="/assets/Flux_Dev_pls_generate_a_image_my_mental_health_app_for_the_bg__3.jpeg"
         alt="Background"
       />
       <div className="absolute  left-1/2 transform -translate-x-1/2 w-[80%] md:w-[60%] lg:w-[30%] text-center px-4 py-10 bg-opacity-50 z-10">
@@ -57,13 +63,16 @@ function Questions() {
               </>
             ) : (
               <h2 className="text-2xl font-semibold text-green-800 mb-6">
-                Loading...
+              No questions
               </h2>
             )}
           </div>
         </div>
       </div>
     </div>
+    </>
+    
+    
   );
 }
 

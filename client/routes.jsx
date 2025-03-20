@@ -21,6 +21,7 @@ const routes = createBrowserRouter([
         path:"/payment",
         element:<Payment />
     },
+
     {
         path: "*",
         element: <h1>Page not found</h1>  

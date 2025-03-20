@@ -2,6 +2,7 @@
   "name": "better-clinic",
   "private": true,
   "version": "0.0.0",
+  "proxy": "http://localhost:5000",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -14,6 +15,8 @@
     "axios": "^1.8.3",
     "json-server": "^1.0.0-beta.3",
     "libphonenumber-js": "^1.12.5",
+    "lottie-react": "^2.4.1",
+    "mui": "^0.0.1",
     "mui-tel-input": "^8.0.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

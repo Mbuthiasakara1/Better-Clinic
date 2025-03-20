@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { MuiTelInput } from "mui-tel-input";
 import {
@@ -19,12 +18,12 @@ function Register() {
   };
 
   const handlePhoneChange = (value) => {
-    setFormData({ ...formData, phone_number: value });
+    setFormData({ ...formData, mobile_number: value });
   };
 
   const validatePhone = () => {
     const parsedNumber = parsePhoneNumberFromString(
-      formData.phone_number,
+      formData.mobile_number,
       "KE"
     );
     if (!parsedNumber || !parsedNumber.isValid()) {
@@ -37,10 +36,10 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validatePhone()) return; 
+    if (!validatePhone()) return;
 
     try {
-      const response = await fetch("http://localhost:3000/users", {
+      const response = await fetch("http://127.0.0.1:5000/api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -83,7 +82,7 @@ function Register() {
                 <input
                   type="text"
                   name="firstName"
-                  value={formData.firstName}
+                  value={formData.first_name}
                   onChange={handleChange}
                   placeholder="First Name"
                   required
@@ -92,7 +91,7 @@ function Register() {
                 <input
                   type="text"
                   name="lastName"
-                  value={formData.lastName}
+                  value={formData.last_name}
                   onChange={handleChange}
                   placeholder="Last Name"
                   required
@@ -114,11 +113,11 @@ function Register() {
                 />
                 <MuiTelInput
                   defaultCountry="KE"
-                  name="phone_number"
+                  name="mobile_number"
                   required
                   onlyCountries={["KE"]}
                   disableDropdown={true}
-                  value={formData.phone_number}
+                  value={formData.mobile_number}
                   onChange={handlePhoneChange}
                   onBlur={validatePhone}
                   placeholder="Phone Number"
@@ -169,7 +168,7 @@ function Register() {
                   type="submit"
                   className="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition"
                 >
-                  Submit
+                 submit
                 </button>
               )}
             </div>

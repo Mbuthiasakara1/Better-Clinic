@@ -13,15 +13,14 @@ users_data = [
 
 # Mental health assessment questions
 questions_data = [
-    {"question_text": "How often do you feel nervous, anxious, or on edge?", 
+    {"question_text": "How often do you feel little interest or pleasure in doing things ?", 
      "category": "Anxiety", 
      "question_type": "multiple_choice", 
      "options": json.dumps([
-         {"text": "Never", "score": 0},
-         {"text": "Rarely", "score": 1},
-         {"text": "Sometimes", "score": 2},
-         {"text": "Often", "score": 3},
-         {"text": "Always", "score": 4}
+         {"text": "Not At all", "score": 0},
+         {"text": "Several days ", "score": 1},
+         {"text": "More than half the days ", "score": 2},
+         {"text": "Nearly every day", "score": 3},
      ])},
 
     {"question_text": "How often do you feel down, depressed, or hopeless?", 

@@ -27,12 +27,7 @@ app.config['SESSION_COOKIE_SECURE'] =  True
 app.config['SESSION_PERMANENT'] = False
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)
 
-CORS(app, resources={r"/*": {
-    "origins": "http://localhost:5173",
-    "allow_headers": ["Content-Type", "Authorization"],
-    "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    "supports_credentials": True
-}})
+CORS(app,origins="http://localhost:5173",supports_credentials=True)
 
 db.init_app(app)  
 migrate = Migrate(app, db) 
