@@ -21,7 +21,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///usichizi.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] =False
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] =True
-app.secret_key = os.getenv('SECRET_KEY')
+app.config['SECRET_KEY'] = b'02667d64003f1664068fb200f220e89c3aba8c64289a520d3c61b05fcf8f80f4f903a4d3e2c46a73fcbdc7f4764a0028d096ddab9fc1e710'
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SECURE'] =  True
 app.config['SESSION_PERMANENT'] = False
@@ -48,12 +48,9 @@ class RegisterUser(Resource):
                 return {"message": "User already exists"}, 400  
 
             new_user = User(
-                first_name=data['first_name'],
-                last_name=data['last_name'],
-                email=data['email'],
                 gender=data['gender'],
                 age_group=data['age_group'],
-                mobile_number=data['mobile_number']
+                relationship_status=data['relationship_status']
             )
             db.session.add(new_user)
             db.session.commit()
@@ -82,9 +79,7 @@ class Questions(Resource):
             new_question = Question(
                 question_text=data['question_text'],
                 category=data['category'],
-                question_type=data['question_type'],
                 options=data['options'],
-                weight=data['weight']
             )
             db.session.add(new_question)
             db.session.commit()
@@ -116,7 +111,9 @@ class Sessions(Resource):
     def get(self):
         sessions = Session.query.all()
         return jsonify([session.to_dict() for session in sessions])
-    def post(self):  
+
+class SessionById(Resource):    
+    def post(self, user_id):  
         data = request.get_json()
         try:
             new_session = Session(

@@ -81,7 +81,11 @@ function Register() {
               <div className="grid grid-cols-1 gap-6">
                 <input
                   type="text"
+<<<<<<< HEAD
                   name="firstName"
+=======
+                  name="first_name"
+>>>>>>> f42e41195584b98bb54ea578fc8bb4f73b3d8a70
                   value={formData.first_name}
                   onChange={handleChange}
                   placeholder="First Name"
@@ -90,7 +94,11 @@ function Register() {
                 />
                 <input
                   type="text"
+<<<<<<< HEAD
                   name="lastName"
+=======
+                  name="last_name"
+>>>>>>> f42e41195584b98bb54ea578fc8bb4f73b3d8a70
                   value={formData.last_name}
                   onChange={handleChange}
                   placeholder="Last Name"
@@ -135,6 +143,19 @@ function Register() {
                   <option value="male">Male</option>
                   <option value="female">Female</option>
                   <option value="other">Other</option>
+                </select>
+                <select
+                  className="col-span-1 md:col-span-2 border p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-400"
+                  name="age_group"
+                  value={formData.age_group}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Age</option>
+                  <option value="0-20">0-20</option>
+                  <option value="20-40">20-40</option>
+                  <option value="40-60">40-60</option>
+                  <option value="60 and above">60 and above</option>
                 </select>
               </div>
             )}

@@ -1,3 +1,2 @@
-server/instance
-server/migrations
-
+/server/instance
+/server/migrations
