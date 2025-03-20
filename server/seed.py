@@ -7,121 +7,152 @@ import json
 
 # Sample users
 users_data = [
-    {"first_name": "Alice", "last_name": "Johnson", "email": "alice@example.com", "gender": "Female", "age_group": "25-34", "mobile_number": 1234567890},
-    {"first_name": "Bob", "last_name": "Smith", "email": "bob@example.com", "gender": "Male", "age_group": "35-44", "mobile_number": 2345678901},
+    {"gender": "Female", "age_group": "25-34", "relationship_status":"Married"},
+    {"gender": "Male", "age_group": "35-44","relationship_status":"Divorced"},
 ]
 
 # Mental health assessment questions
 questions_data = [
-    {"question_text": "How often do you feel nervous, anxious, or on edge?", 
-     "category": "Anxiety", 
-     "question_type": "multiple_choice", 
-     "options": json.dumps([
-         {"text": "Never", "score": 0},
-         {"text": "Rarely", "score": 1},
-         {"text": "Sometimes", "score": 2},
-         {"text": "Often", "score": 3},
-         {"text": "Always", "score": 4}
-     ])},
-
-    {"question_text": "How often do you feel down, depressed, or hopeless?", 
+    {"question_text": "Little interest or pleasure in doing things", 
      "category": "Depression", 
-     "question_type": "multiple_choice", 
      "options": json.dumps([
-         {"text": "Never", "score": 0},
-         {"text": "Rarely", "score": 1},
-         {"text": "Sometimes", "score": 2},
-         {"text": "Often", "score": 3},
-         {"text": "Always", "score": 4}
+         {"text": "Not At all", "score": 0},
+         {"text": "Several days", "score": 1},
+         {"text": "More than half the day", "score": 2},
+         {"text": "Nearly Everyday", "score": 3}
      ])},
 
-    {"question_text": "Do you have trouble falling asleep or staying asleep?", 
-     "category": "Sleep Issues", 
-     "question_type": "multiple_choice", 
-     "options": json.dumps([
-         {"text": "Never", "score": 0},
-         {"text": "Rarely", "score": 1},
-         {"text": "Sometimes", "score": 2},
-         {"text": "Often", "score": 3},
-         {"text": "Always", "score": 4}
-     ])},
-
-    {"question_text": "Do you experience excessive worry about different aspects of life?", 
-     "category": "Anxiety", 
-     "question_type": "multiple_choice", 
-     "options": json.dumps([
-         {"text": "Never", "score": 0},
-         {"text": "Rarely", "score": 1},
-         {"text": "Sometimes", "score": 2},
-         {"text": "Often", "score": 3},
-         {"text": "Always", "score": 4}
-     ])},
-
-    {"question_text": "Do you often feel overwhelmed by your responsibilities?", 
-     "category": "Stress", 
-     "question_type": "multiple_choice", 
-     "options": json.dumps([
-         {"text": "Never", "score": 0},
-         {"text": "Rarely", "score": 1},
-         {"text": "Sometimes", "score": 2},
-         {"text": "Often", "score": 3},
-         {"text": "Always", "score": 4}
-     ])},
-
-    {"question_text": "Do you find it difficult to focus or concentrate?", 
-     "category": "Cognitive Function", 
-     "question_type": "multiple_choice", 
-     "options": json.dumps([
-         {"text": "Never", "score": 0},
-         {"text": "Rarely", "score": 1},
-         {"text": "Sometimes", "score": 2},
-         {"text": "Often", "score": 3},
-         {"text": "Always", "score": 4}
-     ])},
-
-    {"question_text": "Do you experience sudden feelings of panic or fear?", 
-     "category": "Panic Disorder", 
-     "question_type": "multiple_choice", 
-     "options": json.dumps([
-         {"text": "Never", "score": 0},
-         {"text": "Rarely", "score": 1},
-         {"text": "Sometimes", "score": 2},
-         {"text": "Often", "score": 3},
-         {"text": "Always", "score": 4}
-     ])},
-
-    {"question_text": "Do you avoid social situations due to anxiety?", 
-     "category": "Social Anxiety", 
-     "question_type": "multiple_choice", 
-     "options": json.dumps([
-         {"text": "Never", "score": 0},
-         {"text": "Rarely", "score": 1},
-         {"text": "Sometimes", "score": 2},
-         {"text": "Often", "score": 3},
-         {"text": "Always", "score": 4}
-     ])},
-
-    {"question_text": "How often do you feel tired or have low energy?", 
-     "category": "Fatigue", 
-     "question_type": "multiple_choice", 
-     "options": json.dumps([
-         {"text": "Never", "score": 0},
-         {"text": "Rarely", "score": 1},
-         {"text": "Sometimes", "score": 2},
-         {"text": "Often", "score": 3},
-         {"text": "Always", "score": 4}
-     ])},
-
-    {"question_text": "Do you feel like you are not enjoying activities you once loved?", 
+    {"question_text": "Feeling down, depressed or hopeless?", 
      "category": "Depression", 
-     "question_type": "multiple_choice", 
      "options": json.dumps([
-         {"text": "Never", "score": 0},
-         {"text": "Rarely", "score": 1},
-         {"text": "Sometimes", "score": 2},
-         {"text": "Often", "score": 3},
-         {"text": "Always", "score": 4}
-     ])}
+         {"text": "Not At all", "score": 0},
+         {"text": "Several days", "score": 1},
+         {"text": "More than half the day", "score": 2},
+         {"text": "Nearly Everyday", "score": 3}
+     ])},
+
+    {"question_text": "Trouble falling or staying asleep, or sleeping too much?", 
+     "category": "Depression", 
+     "options": json.dumps([
+         {"text": "Not At all", "score": 0},
+         {"text": "Several days", "score": 1},
+         {"text": "More than half the day", "score": 2},
+         {"text": "Nearly Everyday", "score": 3}
+     ])},
+
+    {"question_text": "Feeling tired or having little energy?", 
+     "category": "Depression", 
+     "options": json.dumps([
+         {"text": "Not At all", "score": 0},
+         {"text": "Several days", "score": 1},
+         {"text": "More than half the day", "score": 2},
+         {"text": "Nearly Everyday", "score": 3}
+     ])},
+
+    {"question_text": "Poor appetite or overeating?", 
+     "category": "Depression", 
+     
+     "options": json.dumps([
+         {"text": "Not At all", "score": 0},
+         {"text": "Several days", "score": 1},
+         {"text": "More than half the day", "score": 2},
+         {"text": "Nearly Everyday", "score": 3}
+     ])},
+
+    {"question_text": "Feeling bad about yourself- or that you are a failure or have let yourself or your family down?", 
+     "category": "Depression", 
+     
+     "options": json.dumps([
+         {"text": "Not At all", "score": 0},
+         {"text": "Several days", "score": 1},
+         {"text": "More than half the day", "score": 2},
+         {"text": "Nearly Everyday", "score": 3}
+     ])},
+
+    {"question_text": "Trouble concentrating on things ,such as reading newspaper or watching television?", 
+     "category": "Depression", 
+     
+     "options": json.dumps([
+         {"text": "Not At all", "score": 0},
+         {"text": "Several days", "score": 1},
+         {"text": "More than half the day", "score": 2},
+         {"text": "Nearly Everyday", "score": 3}
+     ])},
+
+    {"question_text": "Moving or speaking so slowly that other people could have noticed. Or the opposite- being so fidgety or restless that you have been moving around a lot more than usual?", 
+     "category": "Depression", 
+     "options": json.dumps([
+         {"text": "Not At all", "score": 0},
+         {"text": "Several days", "score": 1},
+         {"text": "More than half the day", "score": 2},
+         {"text": "Nearly Everyday", "score": 3}
+     ])},
+
+    {"question_text": "Thought that you will be better off dead, or of hurting yourself in some way?", 
+     "category": "Depression", 
+     "options": json.dumps([
+         {"text": "Not At all", "score": 0},
+         {"text": "Several days", "score": 1},
+         {"text": "More than half the day", "score": 2},
+         {"text": "Nearly Everyday", "score": 3}
+     ])},
+
+    {"question_text": "Feeling nervous ,anxious  or on edge?", 
+     "category": "Anxiety", 
+     "options": json.dumps([
+         {"text": "Not At all", "score": 0},
+         {"text": "Several days", "score": 1},
+         {"text": "More than half the day", "score": 2},
+         {"text": "Nearly Everyday", "score": 3}
+     ])},
+    {"question_text": "Not being able to stop or control worrying?", 
+     "category": "Anxiety", 
+     "options": json.dumps([
+         {"text": "Not At all", "score": 0},
+         {"text": "Several days", "score": 1},
+         {"text": "More than half the day", "score": 2},
+         {"text": "Nearly Everyday", "score": 3}
+     ])},
+    {"question_text": "Worrying too much about different things?", 
+     "category": "Anxiety", 
+     "options": json.dumps([
+         {"text": "Not At all", "score": 0},
+         {"text": "Several days", "score": 1},
+         {"text": "More than half the day", "score": 2},
+         {"text": "Nearly Everyday", "score": 3}
+     ])},
+    {"question_text": "Trouble relaxing?", 
+     "category": "Anxiety", 
+     "options": json.dumps([
+         {"text": "Not At all", "score": 0},
+         {"text": "Several days", "score": 1},
+         {"text": "More than half the day", "score": 2},
+         {"text": "Nearly Everyday", "score": 3}
+     ])},
+    {"question_text": "Being so restless that it is hard to sit still?", 
+     "category": "Anxiety", 
+     "options": json.dumps([
+         {"text": "Not At all", "score": 0},
+         {"text": "Several days", "score": 1},
+         {"text": "More than half the day", "score": 2},
+         {"text": "Nearly Everyday", "score": 3}
+     ])},
+    {"question_text": "Becoming easily annoyed or irritable?", 
+     "category": "Anxiety", 
+     "options": json.dumps([
+         {"text": "Not At all", "score": 0},
+         {"text": "Several days", "score": 1},
+         {"text": "More than half the day", "score": 2},
+         {"text": "Nearly Everyday", "score": 3}
+     ])},
+    {"question_text": "Feeling afraid as if something awful might happen?", 
+     "category": "Anxiety", 
+     "options": json.dumps([
+         {"text": "Not At all", "score": 0},
+         {"text": "Several days", "score": 1},
+         {"text": "More than half the day", "score": 2},
+         {"text": "Nearly Everyday", "score": 3}
+     ])},
 ]
 def seed_database():
     with app.app_context():

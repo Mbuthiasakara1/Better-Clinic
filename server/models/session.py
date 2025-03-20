@@ -1,5 +1,6 @@
 from models import db
 from datetime import datetime
+
 class Session(db.Model):
     __tablename__="sessions"
 

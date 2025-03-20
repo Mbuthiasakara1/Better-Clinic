@@ -16,8 +16,6 @@ class Payment(db.Model):
     #relationship
     session = db.relationship('Session', back_populates='payment')
 
-
-
     def mark_as_successful(self, transaction_id):
         self.status = 'completed'
         self.transaction_id = transaction_id

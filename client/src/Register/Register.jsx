@@ -19,12 +19,12 @@ function Register() {
   };
 
   const handlePhoneChange = (value) => {
-    setFormData({ ...formData, phone_number: value });
+    setFormData({ ...formData, mobile_number: value });
   };
 
   const validatePhone = () => {
     const parsedNumber = parsePhoneNumberFromString(
-      formData.phone_number,
+      formData.mobile_number,
       "KE"
     );
     if (!parsedNumber || !parsedNumber.isValid()) {
@@ -40,7 +40,7 @@ function Register() {
     if (!validatePhone()) return; 
 
     try {
-      const response = await fetch("http://localhost:3000/users", {
+      const response = await fetch("http://127.0.0.1:5000/api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -82,8 +82,8 @@ function Register() {
               <div className="grid grid-cols-1 gap-6">
                 <input
                   type="text"
-                  name="firstName"
-                  value={formData.firstName}
+                  name="first_name"
+                  value={formData.first_name}
                   onChange={handleChange}
                   placeholder="First Name"
                   required
@@ -91,8 +91,8 @@ function Register() {
                 />
                 <input
                   type="text"
-                  name="lastName"
-                  value={formData.lastName}
+                  name="last_name"
+                  value={formData.last_name}
                   onChange={handleChange}
                   placeholder="Last Name"
                   required
@@ -114,11 +114,11 @@ function Register() {
                 />
                 <MuiTelInput
                   defaultCountry="KE"
-                  name="phone_number"
+                  name="mobile_number"
                   required
                   onlyCountries={["KE"]}
                   disableDropdown={true}
-                  value={formData.phone_number}
+                  value={formData.mobile_number}
                   onChange={handlePhoneChange}
                   onBlur={validatePhone}
                   placeholder="Phone Number"
@@ -136,6 +136,19 @@ function Register() {
                   <option value="male">Male</option>
                   <option value="female">Female</option>
                   <option value="other">Other</option>
+                </select>
+                <select
+                  className="col-span-1 md:col-span-2 border p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-400"
+                  name="age_group"
+                  value={formData.age_group}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Age</option>
+                  <option value="0-20">0-20</option>
+                  <option value="20-40">20-40</option>
+                  <option value="40-60">40-60</option>
+                  <option value="60 and above">60 and above</option>
                 </select>
               </div>
             )}
