@@ -81,11 +81,7 @@ function Register() {
               <div className="grid grid-cols-1 gap-6">
                 <input
                   type="text"
-<<<<<<< HEAD
-                  name="firstName"
-=======
                   name="first_name"
->>>>>>> f42e41195584b98bb54ea578fc8bb4f73b3d8a70
                   value={formData.first_name}
                   onChange={handleChange}
                   placeholder="First Name"
@@ -94,11 +90,7 @@ function Register() {
                 />
                 <input
                   type="text"
-<<<<<<< HEAD
-                  name="lastName"
-=======
                   name="last_name"
->>>>>>> f42e41195584b98bb54ea578fc8bb4f73b3d8a70
                   value={formData.last_name}
                   onChange={handleChange}
                   placeholder="Last Name"
