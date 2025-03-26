@@ -32,6 +32,7 @@ function Payment() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          
         },
         body: JSON.stringify(formData),
       });
@@ -93,7 +94,7 @@ function Payment() {
                     required
                     onlyCountries={["KE"]}
                     disableDropdown={true}
-                    value={formData.phone_number}
+                    // value={formData.phone_number}
                     onChange={handlePhoneChange}
                     onBlur={validatePhone}
                     placeholder="Phone Number"
