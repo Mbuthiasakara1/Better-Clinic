@@ -1,178 +1,166 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState, useRef } from "react";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import SecondQuestions from "./SecondQuestions";
 import useStore from "../../Store";
 import lottie from "lottie-web"; // Missing import
 import spinner from "../assets/spinner.json";
 function Questions() {
-  const [questions, setQuestions] = useState([]);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [showFinalStep, setShowFinalStep] = useState(false);
-  const [showSecondQuestions, setShowSecondQuestions] = useState(false);
-  const [responses, setResponses] = useState([]);
-  const [isSuccessful, setIsSuccessful] = useState(false);
-  const [isloading, setIsLoading] = useState(true); // Set to true initially while loading
-  const [formData, setFormData] = useState({
-    session_id: "",
-    question_id: "",
-    response_value: [],
-  });
-  // const navigate = useNavigate();
-  const { Session, setSession, user } = useStore();
-  const container = useRef(null);
-
-  // Lottie animation setup
-  useEffect(() => {
-    if (container.current) {
-      const instance = lottie.loadAnimation({
-        container: container.current,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-        animationData: spinner,
-      });
-      return () => instance.destroy();
-    }
-  }, [isloading]);
-
-  // Fetch questions from API
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-      setIsSuccessful(false);
-    }, 60000);
-
-    axios
-      .get("http://127.0.0.1:5000/api/questions")
-      .then((resp) => {
-        if (resp.data.length > 0) {
-          setQuestions(resp.data);
-          setIsSuccessful(true);
-        } else {
-          setIsSuccessful(false);
-        }
-        setIsLoading(false);
-        clearTimeout(timer);
-      })
-      .catch((error) => {
-        setIsSuccessful(false);
-        setIsLoading(true); // Keep loading animation if API fails
-        console.error("Error fetching questions:", error);
-      });
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Uncommented session handling code
-  useEffect(() => {
-    if (Session && responses.length > 0) {
-      handleResponse();
-    }
-  }, [Session, responses]);
-
-  useEffect(() => {
-    if (!user || Session) return;
-    axios
-      .post("http://127.0.0.1:5000/api/sessions", {
-        user_id: user,
-        score: 0,
-        paid: false,
-        result_sent: false,
-      })
-      .then((response) => {
-        console.log("Session created successfully:", response.data);
-        setSession(response.data.id);
-      })
-      .catch((error) => {
-        console.error(
-          "Error creating session:",
-          error.response ? error.response.data : error.message
-        );
-      });
-  }, [user, Session, setSession]);
-
-  // Reset selected option when moving to a new question
-  useEffect(() => {
-    setSelectedOption(null);
-  }, [currentQuestionIndex]);
-
-  const getButtonStyles = (index, isSelected) => {
-    const styles = [
-      {
-        selected: "bg-blue-500 text-white",
-        unselected: "border-blue-500 hover:bg-blue-500",
-      },
-      {
-        selected: "bg-yellow-500 text-white",
-        unselected: "border-yellow-500 hover:bg-yellow-500",
-      },
-      {
-        selected: "bg-purple-500 text-white",
-        unselected: "border-purple-500 hover:bg-purple-500",
-      },
-      {
-        selected: "bg-green-500 text-white",
-        unselected: "border-green-500 hover:bg-green-500",
-      },
-    ];
-    const style = styles[index % styles.length];
-    return isSelected ? style.selected : style.unselected;
-  };
-
-  const handleOptionClick = (index) => {
-    const selectedQuestion = questions[currentQuestionIndex];
-    setSelectedOption(index);
-    setFormData({
-      ...formData,
-      session_id: Session,
-      question_id: selectedQuestion.id,
-      response_value: selectedQuestion.options[index].text,
-    });
-    // Append new response instead of replacing existing ones
-    setResponses((prevResponses) => [
-      ...prevResponses,
-      {
-        question_id: selectedQuestion.id,
-        selected_option: selectedQuestion.options[index].text,
-      },
-    ]);
-  };
-
-  const handleNextQuestion = async () => {
-    if (currentQuestionIndex === questions.length - 1) {
-      setShowFinalStep(true);
-    } else {
-      setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
-      setSelectedOption(null);
-    }
-  };
-
-  const handleMoveBack = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex((prevIndex) => prevIndex - 1);
-      setSelectedOption(null);
-    }
-  };
-
-  async function handleResponse(sessionId) {
-    const currentSessionId = sessionId || Session;
-    if (!currentSessionId) {
-      console.error("Error: No session ID found before submitting responses.");
-      return;
-    }
-    console.log("Submitting responses with session ID:", currentSessionId);
-    console.log("Responses:", responses);
-    try {
-      await axios.post("http://127.0.0.1:5000/api/responses", {
-        session_id: currentSessionId,
-        responses: responses,
-      });
-      console.log("Responses sent successfully:", responses);
-    } catch (error) {
-      console.error("Error submitting responses:", error);
-    }
-  }
+ const [questions, setQuestions] = useState([]);
+ const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+ const [selectedOption, setSelectedOption] = useState(null);
+ const [showFinalStep, setShowFinalStep] = useState(false);
+ const [showSecondQuestions, setShowSecondQuestions] = useState(false);
+ const [responses, setResponses] = useState([]);
+ const [isSuccessful, setIsSuccessful] = useState(false);
+ const [isloading, setIsLoading] = useState(false);
+ const [formData, setFormData] = useState({
+   session_id: "",
+   question_id: "",
+   response_value: [],
+ });
+ const navigate = useNavigate();
+ const { Session, setSession, user } = useStore();
+ const user_id = localStorage.getItem("user_id");
+ const container = useRef(null);
+ // Lottie animation setup
+ useEffect(() => {
+   const instance = lottie.loadAnimation({
+     container: container.current,
+     renderer: "svg",
+     loop: true,
+     autoplay: true,
+     animationData: spinner,
+   });
+   return () => instance.destroy();
+ }, []);
+ // Fetch questions from API
+ useEffect(() => {
+   const timer = setTimeout(() => {
+     setIsLoading(false);
+     setIsSuccessful(false);
+   }, 60000);
+   axios
+     .get("http://127.0.0.1:5000/api/questions")
+     .then((resp) => {
+       if (resp.data.length > 0) {
+         setQuestions(resp.data);
+         setIsSuccessful(true);
+       } else {
+         setIsSuccessful(false);
+       }
+       setIsLoading(false);
+       clearTimeout(timer);
+     })
+     .catch((error) => {
+       setIsSuccessful(false);
+       setIsLoading(true); // Keep loading animation if API fails
+       console.error("Error fetching questions:", error);
+     });
+   return () => clearTimeout(timer);
+ }, []);
+ // useEffect(() => {
+ //   if (Session && responses.length > 0) {
+ //     handleResponse();
+ //   }
+ // }, [Session, responses]);
+ // useEffect(() => {
+ //   if (!user || Session) return;
+ //   axios
+ //     .post("http://127.0.0.1:5000/api/sessions", {
+ //       user_id: user,
+ //       score: 0,
+ //       paid: false,
+ //       result_sent: false,
+ //     })
+ //     .then((response) => {
+ //       console.log("Session created successfully:", response.data);
+ //       setSession(response.data.id);
+ //     })
+ //     .catch((error) => {
+ //       console.error(
+ //         "Error creating session:",
+ //         error.response ? error.response.data : error.message
+ //       );
+ //     });
+ // }, [user, Session]);
+ // Reset selected option when moving to a new question
+ useEffect(() => {
+   setSelectedOption(null);
+ }, [currentQuestionIndex]);
+ const getButtonStyles = (index, isSelected) => {
+   const styles = [
+     {
+       selected: "bg-blue-500 text-white",
+       unselected: "border-blue-500 hover:bg-blue-500",
+     },
+     {
+       selected: "bg-yellow-500 text-white",
+       unselected: "border-yellow-500 hover:bg-yellow-500",
+     },
+     {
+       selected: "bg-purple-500 text-white",
+       unselected: "border-purple-500 hover:bg-purple-500",
+     },
+     {
+       selected: "bg-green-500 text-white",
+       unselected: "border-green-500 hover:bg-green-500",
+     },
+   ];
+   const style = styles[index % styles.length];
+   return isSelected ? style.selected : style.unselected;
+ };
+ const handleOptionClick = (index) => {
+   const selectedQuestion = questions[currentQuestionIndex];
+   setSelectedOption(index);
+   setFormData({
+     ...formData,
+     session_id: Session,
+     question_id: selectedQuestion.id,
+     response_value: selectedQuestion.options[index].text,
+   });
+   // Append new response instead of replacing existing ones
+   setResponses((prevResponses) => [
+     ...prevResponses,
+     {
+       question_id: selectedQuestion.id,
+       selected_option: selectedQuestion.options[index].text,
+     },
+   ]);
+ };
+ const handleNextQuestion = async () => {
+   if (currentQuestionIndex === questions.length - 1) {
+     setShowFinalStep(true);
+   } else {
+     setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
+     setSelectedOption(null);
+   }
+ };
+ const handleMoveBack = () => {
+   if (currentQuestionIndex > 0) {
+     setCurrentQuestionIndex((prevIndex) => prevIndex - 1);
+     setSelectedOption(null);
+   }
+ };
+ async function handleResponse(sessionId) {
+   const currentSessionId = sessionId || Session;
+   if (!currentSessionId) {
+     console.error("Error: No session ID found before submitting responses.");
+     return;
+   }
+   console.log("Submitting responses with session ID:", currentSessionId);
+   console.log("Responses:", responses);
+   try {
+     await axios.post("http://127.0.0.1:5000/api/responses", {
+       session_id: currentSessionId,
+       responses: responses,
+     });
+     console.log("Responses sent successfully:", responses);
+   } catch (error) {
+     console.error("Error submitting responses:", error);
+   }
+ }
 
   return (
     <div className="relative w-screen h-screen flex items-center justify-center px-4 md:px-10 lg:px-20 text-gray-900 dark:text-white overflow-hidden">
