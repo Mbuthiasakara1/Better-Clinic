@@ -158,34 +158,12 @@ def seed_database():
     with app.app_context():
         db.drop_all()
         db.create_all()
-
-        # Add users
-        users = [User(**user) for user in users_data]
-        db.session.add_all(users)
-        db.session.commit()
-
+        
         # Add questions
         questions = [Question(**q) for q in questions_data]
         db.session.add_all(questions)
         db.session.commit()
 
-        # Add sample sessions and responses
-        for user in users:
-            session = Session(user_id=user.id, score=random.uniform(10, 100))
-            db.session.add(session)
-            db.session.commit()
-
-            for question in questions:
-                response = Response(
-                    session_id=session.id,
-                    question_id=question.id,
-                    response_value=random.choice(["Never", "Rarely", "Sometimes", "Often", "Always"])
-                )
-                db.session.add(response)
-
-            # Add a sample payment
-            payment = Payment(session_id=session.id, amount=100.00, currency="KES", status="completed", payment_date=datetime.utcnow())
-            db.session.add(payment)
 
         db.session.commit()
         print("Database seeded successfully!")

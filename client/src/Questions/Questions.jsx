@@ -1,8 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import SecondQuestions from "./SecondQuestions";
+import useStore from "../../Store";
 
 function Questions() {
   const [questions, setQuestions] = useState([]);
@@ -12,15 +14,16 @@ function Questions() {
   const [showSecondQuestions, setShowSecondQuestions] = useState(false);
   const [responses, setResponses] = useState([]);
   const [isSuccessful, setIsSuccessful] = useState(false);
-  const [isloading, setIsLoading]= useState(false)
+  const [isloading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    session_id:"",
-    question_id:"",
-    response_value:[],
+    session_id: "",
+    question_id: "",
+    response_value: [],
   });
-  
   const navigate = useNavigate();
-  const user_id = localStorage.getItem("user_id");
+  // const user_id = localStorage.getItem("user_id");
+  const { Session, setSession, user } = useStore();
+  // console.log("user id is", user_id);
 
   // Fetch questions from API
   useEffect(() => {
@@ -41,23 +44,54 @@ function Questions() {
       });
     return () => clearTimeout(timer);
   }, []);
+  // useEffect(() => {
+  //   if (Session && responses.length > 0) {
+  //     handleResponse();
+  //   }
+  // }, [Session, responses]);
+
+  // useEffect(() => {
+  //   if (!user || Session) return;
+  //   axios
+  //     .post("http://127.0.0.1:5000/api/sessions", {
+  //       user_id: user,
+  //       score: 0,
+  //       paid: false,
+  //       result_sent: false,
+  //     })
+  //     .then((response) => {
+  //       console.log("Session created successfully:", response.data);
+  //       setSession(response.data.id);
+  //     })
+  //     .catch((error) => {
+  //       console.error(
+  //         "Error creating session:",
+  //         error.response ? error.response.data : error.message
+  //       );
+  //     });
+  // }, [user, Session]);
 
   const handleOptionClick = (index) => {
     const selectedQuestion = questions[currentQuestionIndex];
-    
+
     setSelectedOption(index);
-    setFormData({...formData, session_id: user_id, question_id: selectedQuestion.id, response_value: selectedQuestion.options[index].text });
+    setFormData({
+      ...formData,
+      session_id: Session,
+      question_id: selectedQuestion.id,
+      response_value: selectedQuestion.options[index].text,
+    });
 
-
-    const updatedResponses = [...responses];
-    updatedResponses[currentQuestionIndex] = {
-      question_id: questions[currentQuestionIndex].id,
-      selected_option: questions[currentQuestionIndex].options[index].text,
-    };
-    
-    setResponses(updatedResponses);
+    // Append new response instead of replacing existing ones
+    setResponses((prevResponses) => [
+      ...prevResponses,
+      {
+        question_id: selectedQuestion.id,
+        selected_option: selectedQuestion.options[index].text,
+      },
+    ]);
   };
-  
+
   const handleNextQuestion = async () => {
     if (currentQuestionIndex === questions.length - 1) {
       setShowFinalStep(true);
@@ -73,18 +107,27 @@ function Questions() {
     }
   };
 
+  async function handleResponse(sessionId) {
+    const currentSessionId = sessionId || Session;
 
- async function handleResponse() {
-   try {
-     await axios.post("http://127.0.0.1:5000/api/responses", {
-       session_id: user_id,
-       responses: responses,
-     });
-     console.log("Responses sent successfully:", responses);
-   } catch (error) {
-     console.error("Error submitting responses:", error);
-   }
- }
+    if (!currentSessionId) {
+      console.error("Error: No session ID found before submitting responses.");
+      return;
+    }
+
+    console.log("Submitting responses with session ID:", currentSessionId);
+    console.log("Responses:", responses);
+
+    try {
+      await axios.post("http://127.0.0.1:5000/api/responses", {
+        session_id: currentSessionId,
+        responses: responses, // Ensure this array contains ALL responses
+      });
+      console.log("Responses sent successfully:", responses);
+    } catch (error) {
+      console.error("Error submitting responses:", error);
+    }
+  }
 
   return (
     <div className="relative w-screen h-screen flex items-center justify-center px-4 md:px-10 lg:px-20 text-gray-900 dark:text-white overflow-hidden">
@@ -95,7 +138,7 @@ function Questions() {
       />
 
       <div className="absolute left-1/2  transform -translate-x-1/2 w-[80%] md:w-[60%] lg:w-[50%] text-center px-4 py-10 bg-opacity-50 z-10 h-full rounded-3xl flex justify-center items-center p-4">
-        <div className="bg-white shadow-xl h-full rounded-3xl p-8 max-w-md w-full text-center border border-green-300">
+        <div className="bg-white shadow-xl h-fill rounded-3xl p-8 max-w-md w-full text-center border border-green-300">
           {showSecondQuestions ? (
             <SecondQuestions handleResponse={handleResponse} />
           ) : showFinalStep ? (
