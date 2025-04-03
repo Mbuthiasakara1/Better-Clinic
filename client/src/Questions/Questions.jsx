@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import SecondQuestions from "./SecondQuestions";
 import useStore from "../../Store";
-import lottie from "lottie-web"; // Missing import
+import lottie from "lottie-web"; 
 import spinner from "../assets/spinner.json";
 function Questions() {
  const [questions, setQuestions] = useState([]);
@@ -60,31 +60,7 @@ function Questions() {
      });
    return () => clearTimeout(timer);
  }, []);
- // useEffect(() => {
- //   if (Session && responses.length > 0) {
- //     handleResponse();
- //   }
- // }, [Session, responses]);
- // useEffect(() => {
- //   if (!user || Session) return;
- //   axios
- //     .post("http://127.0.0.1:5000/api/sessions", {
- //       user_id: user,
- //       score: 0,
- //       paid: false,
- //       result_sent: false,
- //     })
- //     .then((response) => {
- //       console.log("Session created successfully:", response.data);
- //       setSession(response.data.id);
- //     })
- //     .catch((error) => {
- //       console.error(
- //         "Error creating session:",
- //         error.response ? error.response.data : error.message
- //       );
- //     });
- // }, [user, Session]);
+
  // Reset selected option when moving to a new question
  useEffect(() => {
    setSelectedOption(null);
