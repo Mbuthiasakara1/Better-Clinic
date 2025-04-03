@@ -198,13 +198,6 @@ class Responses(Resource):
                 
             db.session.flush()  
             db.session.commit()  
-<<<<<<< HEAD
-            session = db.session.get(Session, session_id)
-            db.session.refresh(session)  
-
-            if not session:
-                return {"message": "Session not found"}, 404
-=======
 
             session = db.session.get(Session, session_id)
             db.session.refresh(session) 
@@ -212,7 +205,6 @@ class Responses(Resource):
             if not session:
                 return {"message": "Session not found"}, 404
         
->>>>>>> 529fb015216a95cc3f8c6d95aa8ca286c3cc3b24
 
             # Get assessment results
             assessment_result = session.get_assessment_result()
