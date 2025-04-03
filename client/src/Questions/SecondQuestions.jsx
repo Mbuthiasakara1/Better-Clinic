@@ -71,7 +71,7 @@ function SecondQuestions({ handleResponse }) {
         setIsSuccessful(true);
         
         handleResponse();
-        // navigate("/payment");
+        navigate("/payment");
       })
       .catch((error) => {
         console.error("Error submitting data:", error);

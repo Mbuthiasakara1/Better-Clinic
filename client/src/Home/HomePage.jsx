@@ -1,36 +1,120 @@
-/* eslint-disable no-unused-vars */
+// /* eslint-disable no-unused-vars */
+// import React from "react";
+// import { useState } from "react";
+// import useStore from "../../Store";
+// import Questions from "../Questions/Questions";
+// import { useNavigate } from "react-router-dom";
+// function HomePage() {
+//   const { isPressed, setIsPressed } = useStore();
+//   const navigate = useNavigate();
+//   return (
+//     <div className="relative w-screen h-screen flex items-center justify-center px-4 md:px-10 lg:px-20 text-gray-900 dark:text-white">
+//     <img
+//     src="/assets/bg.jpeg"
+//     alt="Background"
+//       className="absolute top-0 left-0 w-full h-full object-cover"
+  
+//   />
+//        <div className="absolute w-full h-full bg-gradient-to-b from-transparent to-black/30"></div>
+//       <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-[90%] md:w-[70%] lg:w-[40%] text-center  px-4 py-10 bg-opacity-50 z-10 ">
+//         <h1 className="w-full text-4xl md:text-5xl lg:text-6xl font-black text-[#18ff8b] text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300 tracking-tight mb-2">
+//           Usichizi
+//         </h1>
+//         <p className="w-full text-lg md:text-2xl lg:text-xl font-bold ">
+//           Your mental health journey
+//           matters. Take our confidential 5-minute assessment to find
+//           personalized support.
+//         </p>
+//         <button
+//            className="p-3 bg-[#88C090] hover:bg-[#6FA982] w-[90%] md:w-[70%] lg:w-[40%] text-white font-semibold rounded-3xl transition-all duration-300 shadow-md w-full mt-2
+//   hover:shadow-green-500 hover:shadow-lg animate-glow"
+//           onClick={() => navigate("/questions")}
+//         >
+//           Start Test
+//         </button>
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default HomePage;
 import React from "react";
 import { useState } from "react";
 import useStore from "../../Store";
 import Questions from "../Questions/Questions";
 import { useNavigate } from "react-router-dom";
+
 function HomePage() {
   const { isPressed, setIsPressed } = useStore();
   const navigate = useNavigate();
+  
   return (
     <div className="relative w-screen h-screen flex items-center justify-center px-4 md:px-10 lg:px-20 text-gray-900 dark:text-white">
       <img
-        className="absolute w-full h-full object-cover"
-        src="/assets/Flux_Dev_pls_generate_a_image_my_mental_health_app_for_the_bg__3.jpeg"
+        src="/assets/bg.jpeg"
         alt="Background"
+        className="absolute top-0 left-0 w-full h-full object-cover"
       />
-       <div className="absolute w-full h-full bg-black bg-opacity-80"></div>
-      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-[80%] md:w-[60%] lg:w-[30%] text-center px-4 py-10 bg-opacity-50 z-10 ">
-        <h1 className="w-full text-3xl md:text-2xl lg:text-4xl font-bold text-[#18ff8b] z-10 mb-1">
+      
+     
+      <div className="absolute w-full h-full bg-gradient-to-b from-black/10 via-transparent to-black/40"></div>
+      
+      
+      <div className="absolute bottom-0  left 1/2 transform-translate-x-1/2 w-[90%] md:w-[70%] lg:w-[40%] text-center px-8 py-10 ">
+       
+        <h1 className="w-full text-5xl md:text-6xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-300 tracking-tight mb-2 animate-pulse-slow">
           Usichizi
         </h1>
-        <p className="w-full text-sm md:text-base lg:text-lg font-semibold text-white">
-          Your mental health journey
-          matters. Take our confidential 5-minute assessment to find
-          personalized support.
+        
+      
+        <p className="w-full text-base md:text-xl lg:text-2xl font-medium text-white leading-relaxed mb-3">
+          Your <span className="font-bold text-emerald-300">mental wellness</span> journey matters.
+          <br className="hidden md:block" /> 
+          Take our <span className="font-bold text-emerald-300">confidential 5-minute</span> assessment 
+          to find <span className="font-bold text-emerald-300">personalized</span> support.
         </p>
+        
+     
         <button
-          className="p-3 bg-[#88C090] hover:bg-[#6FA982] text-white font-semibold rounded-xl transition-all duration-300 shadow-md w-full mt-2"
+          className="px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-600 hover:to-teal-500 text-white text-lg font-bold rounded-full transition-all duration-300 shadow-lg w-[80%] md:w-[60%] lg:w-[50%] mt-4 transform hover:-translate-y-1 hover:shadow-emerald-500/50 hover:shadow-lg"
           onClick={() => navigate("/questions")}
         >
-          Start Test
+          Begin Your Journey
         </button>
+        
+        {/* Trust indicators */}
+        <div className="mt-6 flex items-center justify-center space-x-4 text-white/80">
+          <div className="flex items-center">
+            <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+              <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"></path>
+            </svg>
+            <span className="text-sm">Confidential</span>
+          </div>
+          <div className="w-1 h-1 bg-white/50 rounded-full"></div>
+          <div className="flex items-center">
+            <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
+              <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd"></path>
+            </svg>
+            <span className="text-sm">Personalized</span>
+          </div>
+        </div>
       </div>
+      
+      {/* Add custom animation */}
+      <style jsx>{`
+        @keyframes pulse-slow {
+          0%, 100% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0.9;
+          }
+        }
+        .animate-pulse-slow {
+          animation: pulse-slow 4s infinite;
+        }
+      `}</style>
     </div>
   );
 }

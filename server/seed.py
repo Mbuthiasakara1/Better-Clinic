@@ -13,7 +13,7 @@ users_data = [
 
 # Mental health assessment questions
 questions_data = [
-    {"question_text": "Little interest or pleasure in doing things", 
+    {"question_text": "Do you have little interest or pleasure in doing things?", 
      "category": "Depression", 
      "options": json.dumps([
          {"text": "Not At all", "score": 0},
@@ -22,7 +22,7 @@ questions_data = [
          {"text": "Nearly Everyday", "score": 3}
      ])},
 
-    {"question_text": "Feeling down, depressed or hopeless?", 
+    {"question_text": "Do you feel down, depressed, or hopeless?", 
      "category": "Depression", 
      "options": json.dumps([
          {"text": "Not At all", "score": 0},
@@ -31,7 +31,7 @@ questions_data = [
          {"text": "Nearly Everyday", "score": 3}
      ])},
 
-    {"question_text": "Trouble falling or staying asleep, or sleeping too much?", 
+    {"question_text": "Are you experiencing trouble falling or staying asleep, or sleeping too much?", 
      "category": "Depression", 
      "options": json.dumps([
          {"text": "Not At all", "score": 0},
@@ -40,7 +40,7 @@ questions_data = [
          {"text": "Nearly Everyday", "score": 3}
      ])},
 
-    {"question_text": "Feeling tired or having little energy?", 
+    {"question_text": "Do you feel tired or have little energy?", 
      "category": "Depression", 
      "options": json.dumps([
          {"text": "Not At all", "score": 0},
@@ -49,17 +49,7 @@ questions_data = [
          {"text": "Nearly Everyday", "score": 3}
      ])},
 
-    {"question_text": "Poor appetite or overeating?", 
-     "category": "Depression", 
-     
-     "options": json.dumps([
-         {"text": "Not At all", "score": 0},
-         {"text": "Several days", "score": 1},
-         {"text": "More than half the day", "score": 2},
-         {"text": "Nearly Everyday", "score": 3}
-     ])},
-
-    {"question_text": "Feeling bad about yourself- or that you are a failure or have let yourself or your family down?", 
+    {"question_text":"Are you experiencing poor appetite or overeating?", 
      "category": "Depression", 
      
      "options": json.dumps([
@@ -69,7 +59,7 @@ questions_data = [
          {"text": "Nearly Everyday", "score": 3}
      ])},
 
-    {"question_text": "Trouble concentrating on things ,such as reading newspaper or watching television?", 
+    {"question_text": "Do you feel bad about yourself - or that you are a failure or have let yourself or your family down?", 
      "category": "Depression", 
      
      "options": json.dumps([
@@ -79,7 +69,17 @@ questions_data = [
          {"text": "Nearly Everyday", "score": 3}
      ])},
 
-    {"question_text": "Moving or speaking so slowly that other people could have noticed. Or the opposite- being so fidgety or restless that you have been moving around a lot more than usual?", 
+    {"question_text": "Do you have trouble concentrating on things, such as reading a newspaper or watching television?", 
+     "category": "Depression", 
+     
+     "options": json.dumps([
+         {"text": "Not At all", "score": 0},
+         {"text": "Several days", "score": 1},
+         {"text": "More than half the day", "score": 2},
+         {"text": "Nearly Everyday", "score": 3}
+     ])},
+
+    {"question_text": "Are you moving or speaking so slowly that other people could have noticed? Or are you experiencing the opposite - being so fidgety or restless that you have been moving around a lot more than usual?", 
      "category": "Depression", 
      "options": json.dumps([
          {"text": "Not At all", "score": 0},
@@ -88,7 +88,7 @@ questions_data = [
          {"text": "Nearly Everyday", "score": 3}
      ])},
 
-    {"question_text": "Thought that you will be better off dead, or of hurting yourself in some way?", 
+    {"question_text": "Have you had thoughts that you would be better off dead, or of hurting yourself in some way?", 
      "category": "Depression", 
      "options": json.dumps([
          {"text": "Not At all", "score": 0},
@@ -97,7 +97,7 @@ questions_data = [
          {"text": "Nearly Everyday", "score": 3}
      ])},
 
-    {"question_text": "Feeling nervous ,anxious  or on edge?", 
+    {"question_text": "Do you feel nervous, anxious, or on edge?", 
      "category": "Anxiety", 
      "options": json.dumps([
          {"text": "Not At all", "score": 0},
@@ -105,7 +105,7 @@ questions_data = [
          {"text": "More than half the day", "score": 2},
          {"text": "Nearly Everyday", "score": 3}
      ])},
-    {"question_text": "Not being able to stop or control worrying?", 
+    {"question_text": "Are you unable to stop or control worrying?", 
      "category": "Anxiety", 
      "options": json.dumps([
          {"text": "Not At all", "score": 0},
@@ -113,7 +113,7 @@ questions_data = [
          {"text": "More than half the day", "score": 2},
          {"text": "Nearly Everyday", "score": 3}
      ])},
-    {"question_text": "Worrying too much about different things?", 
+    {"question_text": "Are you worrying too much about different things?", 
      "category": "Anxiety", 
      "options": json.dumps([
          {"text": "Not At all", "score": 0},
@@ -121,7 +121,7 @@ questions_data = [
          {"text": "More than half the day", "score": 2},
          {"text": "Nearly Everyday", "score": 3}
      ])},
-    {"question_text": "Trouble relaxing?", 
+    {"question_text": "Do you have trouble relaxing?", 
      "category": "Anxiety", 
      "options": json.dumps([
          {"text": "Not At all", "score": 0},
@@ -129,7 +129,7 @@ questions_data = [
          {"text": "More than half the day", "score": 2},
          {"text": "Nearly Everyday", "score": 3}
      ])},
-    {"question_text": "Being so restless that it is hard to sit still?", 
+    {"question_text": "Are you so restless that it is hard to sit still?", 
      "category": "Anxiety", 
      "options": json.dumps([
          {"text": "Not At all", "score": 0},
@@ -137,7 +137,7 @@ questions_data = [
          {"text": "More than half the day", "score": 2},
          {"text": "Nearly Everyday", "score": 3}
      ])},
-    {"question_text": "Becoming easily annoyed or irritable?", 
+    {"question_text": "Do you become easily annoyed or irritable?", 
      "category": "Anxiety", 
      "options": json.dumps([
          {"text": "Not At all", "score": 0},
@@ -145,7 +145,7 @@ questions_data = [
          {"text": "More than half the day", "score": 2},
          {"text": "Nearly Everyday", "score": 3}
      ])},
-    {"question_text": "Feeling afraid as if something awful might happen?", 
+    {"question_text": "Do you feel afraid, as if something awful might happen?", 
      "category": "Anxiety", 
      "options": json.dumps([
          {"text": "Not At all", "score": 0},

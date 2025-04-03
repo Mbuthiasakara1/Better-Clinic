@@ -54,7 +54,7 @@ function Payment() {
     <div className="relative w-screen h-screen flex items-center justify-center px-4 md:px-10 lg:px-20 text-gray-900 dark:text-white">
       <img
         className="absolute w-full h-full object-cover opacity-100"
-        src="assets/Flux_Dev_pls_generate_a_image_my_mental_health_app_for_the_bg__3.jpeg"
+        src="/assets/bg.jpeg"
         alt="Background"
       />
       <div className="absolute h-screen  left-1/2 transform -translate-x-1/2 w-[80%] md:w-[60%] lg:w-[50%] text-center px-4 py-10 bg-opacity-50 z-10 ">
@@ -98,17 +98,6 @@ function Payment() {
                     onChange={handlePhoneChange}
                     onBlur={validatePhone}
                     placeholder="Phone Number"
-                    className="border p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-400"
-                  />
-                </label>
-                <label htmlFor="Amount">
-                  Amount
-                  <input
-                    type="number"
-                    id="amount"
-                    name="amount"
-                    readOnly
-                    defaultValue={100}
                     className="border p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-400"
                   />
                 </label>
