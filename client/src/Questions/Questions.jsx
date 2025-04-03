@@ -1,9 +1,10 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState, useRef } from "react";
 // import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import SecondQuestions from "./SecondQuestions";
 import useStore from "../../Store";
-import lottie from "lottie-web"; // Missing import
+import lottie from "lottie-web"; 
 import spinner from "../assets/spinner.json";
 function Questions() {
   const [questions, setQuestions] = useState([]);
@@ -13,7 +14,7 @@ function Questions() {
   const [showSecondQuestions, setShowSecondQuestions] = useState(false);
   const [responses, setResponses] = useState([]);
   const [isSuccessful, setIsSuccessful] = useState(false);
-  const [isloading, setIsLoading] = useState(true); // Set to true initially while loading
+  const [isloading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     session_id: "",
     question_id: "",
@@ -21,29 +22,25 @@ function Questions() {
   });
   // const navigate = useNavigate();
   const { Session, setSession, user } = useStore();
+  const user_id = localStorage.getItem("user_id");
   const container = useRef(null);
-
   // Lottie animation setup
   useEffect(() => {
-    if (container.current) {
-      const instance = lottie.loadAnimation({
-        container: container.current,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-        animationData: spinner,
-      });
-      return () => instance.destroy();
-    }
-  }, [isloading]);
-
+    const instance = lottie.loadAnimation({
+      container: container.current,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+      animationData: spinner,
+    });
+    return () => instance.destroy();
+  }, []);
   // Fetch questions from API
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
       setIsSuccessful(false);
     }, 60000);
-
     axios
       .get("http://127.0.0.1:5000/api/questions")
       .then((resp) => {
@@ -63,40 +60,35 @@ function Questions() {
       });
     return () => clearTimeout(timer);
   }, []);
-
-  // Uncommented session handling code
-  useEffect(() => {
-    if (Session && responses.length > 0) {
-      handleResponse();
-    }
-  }, [Session, responses]);
-
-  useEffect(() => {
-    if (!user || Session) return;
-    axios
-      .post("http://127.0.0.1:5000/api/sessions", {
-        user_id: user,
-        score: 0,
-        paid: false,
-        result_sent: false,
-      })
-      .then((response) => {
-        console.log("Session created successfully:", response.data);
-        setSession(response.data.id);
-      })
-      .catch((error) => {
-        console.error(
-          "Error creating session:",
-          error.response ? error.response.data : error.message
-        );
-      });
-  }, [user, Session, setSession]);
-
+  // useEffect(() => {
+  //   if (Session && responses.length > 0) {
+  //     handleResponse();
+  //   }
+  // }, [Session, responses]);
+  // useEffect(() => {
+  //   if (!user || Session) return;
+  //   axios
+  //     .post("http://127.0.0.1:5000/api/sessions", {
+  //       user_id: user,
+  //       score: 0,
+  //       paid: false,
+  //       result_sent: false,
+  //     })
+  //     .then((response) => {
+  //       console.log("Session created successfully:", response.data);
+  //       setSession(response.data.id);
+  //     })
+  //     .catch((error) => {
+  //       console.error(
+  //         "Error creating session:",
+  //         error.response ? error.response.data : error.message
+  //       );
+  //     });
+  // }, [user, Session]);
   // Reset selected option when moving to a new question
   useEffect(() => {
     setSelectedOption(null);
   }, [currentQuestionIndex]);
-
   const getButtonStyles = (index, isSelected) => {
     const styles = [
       {
@@ -119,7 +111,6 @@ function Questions() {
     const style = styles[index % styles.length];
     return isSelected ? style.selected : style.unselected;
   };
-
   const handleOptionClick = (index) => {
     const selectedQuestion = questions[currentQuestionIndex];
     setSelectedOption(index);
@@ -138,7 +129,6 @@ function Questions() {
       },
     ]);
   };
-
   const handleNextQuestion = async () => {
     if (currentQuestionIndex === questions.length - 1) {
       setShowFinalStep(true);
@@ -147,14 +137,12 @@ function Questions() {
       setSelectedOption(null);
     }
   };
-
   const handleMoveBack = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex((prevIndex) => prevIndex - 1);
       setSelectedOption(null);
     }
   };
-
   async function handleResponse(sessionId) {
     const currentSessionId = sessionId || Session;
     if (!currentSessionId) {
