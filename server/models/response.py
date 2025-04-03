@@ -17,7 +17,7 @@ class Response(db.Model):
 
     def __repr__(self):
         return f"<Response {self.id} for {self.session_id}>"
-    
+
 
     def to_dict(self):
         return{

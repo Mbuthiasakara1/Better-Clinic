@@ -1,7 +1,8 @@
 /* eslint-disable no-unused-vars */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import useStore from "../../Store";
 
 function SecondQuestions({ handleResponse }) {
   const [step, setStep] = useState(0);
@@ -11,6 +12,9 @@ function SecondQuestions({ handleResponse }) {
     relationship_status: "",
   });
   const [isSuccessful, setIsSuccessful] = useState(false);
+  const { Session, setSession, user, setUser } = useStore();
+
+  //  const user_id = localStorage.getItem("user_id");
   const navigate = useNavigate();
 
   const questions = [
@@ -55,27 +59,37 @@ function SecondQuestions({ handleResponse }) {
     }
   };
 
-  const handleSubmit = () => {
-    axios
-      .post(
+  const handleSubmit = async () => {
+    try {
+      // Create user
+      const userResponse = await axios.post(
         "http://127.0.0.1:5000/api/user",
-        {
-          age_group: formData.age_group,
-          gender: formData.gender,
-          relationship_status: formData.relationship_status,
-        },
+        formData,
         { withCredentials: true }
-      )
-      .then((resp) => {
-        console.log("Data submitted successfully:", resp.data);
-        setIsSuccessful(true);
-        
-        handleResponse();
-        navigate("/payment");
-      })
-      .catch((error) => {
-        console.error("Error submitting data:", error);
-      });  
+      );
+      const userId = userResponse.data.user_id;
+      setUser(userId);
+
+      // Create session
+      const sessionResponse = await axios.post(
+        "http://127.0.0.1:5000/api/sessions",
+        {
+          user_id: userId,
+          score: 0,
+          paid: false,
+          result_sent: false,
+        }
+      );
+
+      const newSessionId = sessionResponse.data.id;
+      setSession(newSessionId);
+
+      setTimeout(() => {
+        handleResponse(newSessionId);
+      }, 100);
+    } catch (error) {
+      console.error("Error in user/session creation:", error);
+    }
   };
 
   return (

@@ -4,10 +4,15 @@ import React, { useEffect, useState } from "react";
 import useStore from "../../Store";
 import { isValidPhoneNumber } from "libphonenumber-js";
 import { useNavigate } from "react-router-dom";
+import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
+import PaypalPayment from "./PaypalPayment";
 
 function Payment() {
   const { formData, setFormData } = useStore();
   const [isSuccessful, setIsSuccessful] = useState(false);
+   const [user, setUser] = useState([]);
+   const [message, setMessage] = useState("");
+   const [displayForm, setDisplayForm]= useState(false)
   const navigate = useNavigate();
 
   const handlePhoneChange = (value) => {
@@ -22,34 +27,39 @@ function Payment() {
     return true;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
 
-    if (!validatePhone()) return;
+    // if (!validatePhone()) return;
 
-    try {
-      const response = await fetch("http://localhost:3000/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          
-        },
-        body: JSON.stringify(formData),
-      });
 
-      if (!response.ok) throw new Error("Network response was not ok.");
+    // try {
+    //   const response = await fetch("http://localhost:3000/users", {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify(formData),
+    //   });
 
-      const data = await response.json();
-      setFormData(data);
+    //   if (!response.ok) throw new Error("Network response was not ok.");
 
-      setIsSuccessful(true);
-      // navigate("/payment");
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      alert("Transaction was unsuccessful. Please try again.");
-    }
+    //   const data = await response.json();
+    //   setFormData(data);
+
+    //   setIsSuccessful(true);
+    //   // navigate("/payment");
+    // } catch (error) {
+    //   console.error("Error submitting form:", error);
+    //   alert("Transaction was unsuccessful. Please try again.");
+    // }
+  // };
+  const initialOptions = {
+    clientId:
+      "AVYzf04TRxo6ZzBCDYzq9J36DVh934-1WxZBXRfI4Ma0JTNTHMUeq0CP_MaHt1__yl_QkhkKzuCo5S0s",
+    currency: "KES",
+    intent: "capture",
   };
-
   return (
     <div className="relative w-screen h-screen flex items-center justify-center px-4 md:px-10 lg:px-20 text-gray-900 dark:text-white">
       <img
@@ -57,6 +67,7 @@ function Payment() {
         src="/assets/bg.jpeg"
         alt="Background"
       />
+
       <div className="absolute h-screen  left-1/2 transform -translate-x-1/2 w-[80%] md:w-[60%] lg:w-[50%] text-center px-4 py-10 bg-opacity-50 z-10 ">
         <div className="flex justify-center items-center min-h-[70%]">
           {isSuccessful ? (
@@ -101,10 +112,21 @@ function Payment() {
                     className="border p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-400"
                   />
                 </label>
+                <label htmlFor="Amount">
+                  Amount
+                  <input
+                    type="number"
+                    id="amount"
+                    name="amount"
+                    readOnly
+                    defaultValue={100}
+                    className="border p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-400"
+                  />
+                </label>
                 <button
                   type="submit"
                   className="w-full mt-3 bg-green-800 text-white hover:bg-green-900 px-4 py-2 rounded-3xl text-sm font-semibold"
-                  onClick={handleSubmit}
+                  // onClick={handleSubmit}
                 >
                   Pay Now
                 </button>
