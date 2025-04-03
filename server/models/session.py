@@ -48,8 +48,6 @@ class Session(db.Model):
                 print(f"Error: No question found for response {response.id}")  
                 continue  
 
-            print(f"Processing question {question.id} in category {question.category}")  
-
             options = json.loads(question.options) 
             max_score = max(option["score"] for option in options)  
 

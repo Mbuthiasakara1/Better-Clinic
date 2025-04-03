@@ -64,80 +64,76 @@ function Payment() {
     <div className="relative w-screen h-screen flex items-center justify-center px-4 md:px-10 lg:px-20 text-gray-900 dark:text-white">
       <img
         className="absolute w-full h-full object-cover opacity-100"
-        src="assets/Flux_Dev_pls_generate_a_image_my_mental_health_app_for_the_bg__3.jpeg"
+        src="/assets/bg.jpeg"
         alt="Background"
       />
 
       <div className="absolute h-screen  left-1/2 transform -translate-x-1/2 w-[80%] md:w-[60%] lg:w-[50%] text-center px-4 py-10 bg-opacity-50 z-10 ">
-        <PayPalScriptProvider options={initialOptions}>
-          <div className="flex justify-center items-center min-h-[70%]">
-            {isSuccessful ? (
-              <div className="w-[300px] h-[300px] bg-white rounded-3xl shadow-xl p-8">
-                <h1 className="text-2xl font-semibold text-green-800 mb-6">
-                  Payment Successful!
-                </h1>
-                <p>
-                  Your payment has been processed successfully. You can now
-                  access your account and start managing your mental health
-                  journey.
-                </p>
+        <div className="flex justify-center items-center min-h-[70%]">
+          {isSuccessful ? (
+            <div className="w-[300px] h-[300px] bg-white rounded-3xl shadow-xl p-8">
+              <h1 className="text-2xl font-semibold text-green-800 mb-6">
+                Payment Successful!
+              </h1>
+              <p>
+                Your payment has been processed successfully. You can now access
+                your account and start managing your mental health journey.
+              </p>
+              <button
+                className="w-full bg-green-800 text-white hover:bg-green-900 px-4 py-2 rounded-3xl text-sm font-semibold"
+                onClick={() => (window.location.href = "/")}
+              >
+                Go to Homepage
+              </button>
+            </div>
+          ) : (
+            <div className="w-[300px] h-full bg-white rounded-3xl shadow-xl p-8 ">
+              <p className="font-semibold text-green-800">
+                In order to view your score, we require you to pay ksh 100
+              </p>
+              <form
+                action=""
+                method="post"
+                onSubmit={(e) => e.preventDefault()}
+                className="flex flex-col space-y-2 mt-3"
+              >
+                <label htmlFor="phone_number">
+                  Phone Number
+                  <MuiTelInput
+                    defaultCountry="KE"
+                    name="phone_number"
+                    required
+                    onlyCountries={["KE"]}
+                    disableDropdown={true}
+                    // value={formData.phone_number}
+                    onChange={handlePhoneChange}
+                    onBlur={validatePhone}
+                    placeholder="Phone Number"
+                    className="border p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-400"
+                  />
+                </label>
+                <label htmlFor="Amount">
+                  Amount
+                  <input
+                    type="number"
+                    id="amount"
+                    name="amount"
+                    readOnly
+                    defaultValue={100}
+                    className="border p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-400"
+                  />
+                </label>
                 <button
-                  className="w-full bg-green-800 text-white hover:bg-green-900 px-4 py-2 rounded-3xl text-sm font-semibold"
-                  onClick={() => (window.location.href = "/")}
+                  type="submit"
+                  className="w-full mt-3 bg-green-800 text-white hover:bg-green-900 px-4 py-2 rounded-3xl text-sm font-semibold"
+                  // onClick={handleSubmit}
                 >
-                  Go to Homepage
+                  Pay Now
                 </button>
-              </div>
-            ) : (
-              <div className="w-[300px] h-full bg-white rounded-3xl shadow-xl p-8 ">
-                <p className="font-semibold text-green-800">
-                  In order to view your score, we require you to pay ksh 100
-                </p>
-                <form
-                  action=""
-                  method="post"
-                  onSubmit={(e) => e.preventDefault()}
-                  className="flex flex-col space-y-2 mt-3"
-                >
-                  <label htmlFor="phone_number">
-                    Phone Number
-                    <MuiTelInput
-                      defaultCountry="KE"
-                      name="phone_number"
-                      required
-                      onlyCountries={["KE"]}
-                      disableDropdown={true}
-                      // value={formData.phone_number}
-                      onChange={handlePhoneChange}
-                      onBlur={validatePhone}
-                      placeholder="Phone Number"
-                      className="border p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-400"
-                    />
-                  </label>
-                  <label htmlFor="Amount">
-                    Amount
-                    <input
-                      type="number"
-                      id="amount"
-                      name="amount"
-                      readOnly
-                      defaultValue={100}
-                      className="border p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-400"
-                    />
-                  </label>
-                  <button
-                    type="submit"
-                    className="w-full mt-3 mb-3 bg-green-800 text-white hover:bg-green-900 px-4 py-2 rounded-3xl text-sm font-semibold"
-                    onClick={()=>setDisplayForm(true)}
-                  >
-                    Pay Now
-                  </button>
-                </form>
-                {displayForm === true && <PaypalPayment />}
-              </div>
-            )}
-          </div>
-        </PayPalScriptProvider>
+              </form>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

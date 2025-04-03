@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { MuiTelInput } from "mui-tel-input";
 import {
@@ -37,7 +36,7 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validatePhone()) return; 
+    if (!validatePhone()) return;
 
     try {
       const response = await fetch("http://127.0.0.1:5000/api/register", {
@@ -182,7 +181,7 @@ function Register() {
                   type="submit"
                   className="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition"
                 >
-                  Submit
+                 submit
                 </button>
               )}
             </div>
