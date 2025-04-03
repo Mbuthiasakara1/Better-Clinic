@@ -198,11 +198,21 @@ class Responses(Resource):
                 
             db.session.flush()  
             db.session.commit()  
+<<<<<<< HEAD
             session = db.session.get(Session, session_id)
             db.session.refresh(session)  
 
             if not session:
                 return {"message": "Session not found"}, 404
+=======
+
+            session = db.session.get(Session, session_id)
+            db.session.refresh(session) 
+
+            if not session:
+                return {"message": "Session not found"}, 404
+        
+>>>>>>> 529fb015216a95cc3f8c6d95aa8ca286c3cc3b24
 
             # Get assessment results
             assessment_result = session.get_assessment_result()
@@ -223,9 +233,7 @@ class ResponseById(Resource):
         responses = Response.query.filter_by(session_id=session_id).all()
         return jsonify([response.to_dict() for response in responses])
         
-        # response = make_response(jsonify(session.to_dict()))
-         
-        # return response
+        
 
 class Sessions(Resource):
     def get(self):
