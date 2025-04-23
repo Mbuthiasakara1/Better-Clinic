@@ -112,17 +112,7 @@ function Payment() {
                     className="border p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-400"
                   />
                 </label>
-                <label htmlFor="Amount">
-                  Amount
-                  <input
-                    type="number"
-                    id="amount"
-                    name="amount"
-                    readOnly
-                    defaultValue={100}
-                    className="border p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-400"
-                  />
-                </label>
+              
                 <button
                   type="submit"
                   className="w-full mt-3 bg-green-800 text-white hover:bg-green-900 px-4 py-2 rounded-3xl text-sm font-semibold"
