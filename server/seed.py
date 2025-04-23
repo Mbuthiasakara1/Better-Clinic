@@ -1,15 +1,9 @@
 from app import app
-from models import db, User, Question, Session, Response, Payment
+from models import db,Question, Admin
 from datetime import datetime
 import random
 import json
 
-
-# Sample users
-users_data = [
-    {"gender": "Female", "age_group": "25-34", "relationship_status":"Married"},
-    {"gender": "Male", "age_group": "35-44","relationship_status":"Divorced"},
-]
 
 # Mental health assessment questions
 questions_data = [
@@ -154,10 +148,20 @@ questions_data = [
          {"text": "Nearly Everyday", "score": 3}
      ])},
 ]
+
 def seed_database():
     with app.app_context():
         db.drop_all()
         db.create_all()
+        
+        # Create admin users
+        admin1 = Admin(username="admin1")
+        admin1.set_password("password123")
+
+        admin2 = Admin(username="admin2")
+        admin2.set_password("securepass456")
+
+        db.session.add_all([admin1, admin2])
         
         # Add questions
         questions = [Question(**q) for q in questions_data]

@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import { MuiTelInput } from "mui-tel-input";
 import React, { useEffect, useState } from "react";
@@ -6,13 +7,12 @@ import { isValidPhoneNumber } from "libphonenumber-js";
 import { useNavigate } from "react-router-dom";
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import PaypalPayment from "./PaypalPayment";
+import axios from "axios";
 
 function Payment() {
   const { formData, setFormData } = useStore();
   const [isSuccessful, setIsSuccessful] = useState(false);
-   const [user, setUser] = useState([]);
-   const [message, setMessage] = useState("");
-   const [displayForm, setDisplayForm]= useState(false)
+  const { Session, setSession, user } = useStore();
   const navigate = useNavigate();
 
   const handlePhoneChange = (value) => {
@@ -30,36 +30,53 @@ function Payment() {
   // const handleSubmit = async (e) => {
   //   e.preventDefault();
 
-    // if (!validatePhone()) return;
+  // if (!validatePhone()) return;
 
+  // try {
+  //   const response = await fetch("http://localhost:3000/users", {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify(formData),
+  //   });
 
-    // try {
-    //   const response = await fetch("http://localhost:3000/users", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify(formData),
-    //   });
+  //   if (!response.ok) throw new Error("Network response was not ok.");
 
-    //   if (!response.ok) throw new Error("Network response was not ok.");
+  //   const data = await response.json();
+  //   setFormData(data);
 
-    //   const data = await response.json();
-    //   setFormData(data);
-
-    //   setIsSuccessful(true);
-    //   // navigate("/payment");
-    // } catch (error) {
-    //   console.error("Error submitting form:", error);
-    //   alert("Transaction was unsuccessful. Please try again.");
-    // }
+  //   setIsSuccessful(true);
+  //   // navigate("/payment");
+  // } catch (error) {
+  //   console.error("Error submitting form:", error);
+  //   alert("Transaction was unsuccessful. Please try again.");
+  // }
   // };
+
   const initialOptions = {
     clientId:
       "AVYzf04TRxo6ZzBCDYzq9J36DVh934-1WxZBXRfI4Ma0JTNTHMUeq0CP_MaHt1__yl_QkhkKzuCo5S0s",
-    currency: "KES",
+    currency: "USD",
     intent: "capture",
   };
+  // const priceLabel = paymentMethod === "paypal" ? "$1.00" : "Ksh 100";
+  useEffect(() => {
+    if (isSuccessful) {
+      axios
+        .patch(`http://127.0.0.1:5000/api/${Session}/session`, {
+          paid: true,
+        })
+        .then(() => {
+          console.log("Session updated successfully.");
+          navigate("/results");
+        })
+        .catch((err) => {
+          console.error("Failed to update session:", err);
+        });
+    }
+  }, [isSuccessful]);
+
   return (
     <div className="relative w-screen h-screen flex items-center justify-center px-4 md:px-10 lg:px-20 text-gray-900 dark:text-white">
       <img
@@ -70,69 +87,88 @@ function Payment() {
 
       <div className="absolute h-screen  left-1/2 transform -translate-x-1/2 w-[80%] md:w-[60%] lg:w-[50%] text-center px-4 py-10 bg-opacity-50 z-10 ">
         <div className="flex justify-center items-center min-h-[70%]">
-          {isSuccessful ? (
-            <div className="w-[300px] h-[300px] bg-white rounded-3xl shadow-xl p-8">
-              <h1 className="text-2xl font-semibold text-green-800 mb-6">
-                Payment Successful!
-              </h1>
-              <p>
-                Your payment has been processed successfully. You can now access
-                your account and start managing your mental health journey.
-              </p>
-              <button
-                className="w-full bg-green-800 text-white hover:bg-green-900 px-4 py-2 rounded-3xl text-sm font-semibold"
-                onClick={() => (window.location.href = "/")}
-              >
-                Go to Homepage
-              </button>
-            </div>
-          ) : (
+          <PayPalScriptProvider options={initialOptions}>
             <div className="w-[300px] h-full bg-white rounded-3xl shadow-xl p-8 ">
               <p className="font-semibold text-green-800">
                 In order to view your score, we require you to pay ksh 100
               </p>
-              <form
-                action=""
-                method="post"
-                onSubmit={(e) => e.preventDefault()}
-                className="flex flex-col space-y-2 mt-3"
-              >
-                <label htmlFor="phone_number">
-                  Phone Number
-                  <MuiTelInput
-                    defaultCountry="KE"
-                    name="phone_number"
-                    required
-                    onlyCountries={["KE"]}
-                    disableDropdown={true}
-                    // value={formData.phone_number}
-                    onChange={handlePhoneChange}
-                    onBlur={validatePhone}
-                    placeholder="Phone Number"
-                    className="border p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-400"
-                  />
-                </label>
-                <label htmlFor="Amount">
-                  Amount
-                  <input
-                    type="number"
-                    id="amount"
-                    name="amount"
-                    readOnly
-                    defaultValue={100}
-                    className="border p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-400"
-                  />
-                </label>
-                <button
-                  type="submit"
-                  className="w-full mt-3 bg-green-800 text-white hover:bg-green-900 px-4 py-2 rounded-3xl text-sm font-semibold"
-                  // onClick={handleSubmit}
-                >
-                  Pay Now
-                </button>
-              </form>
+              <PayPalButtons
+                style={{
+                  shape: "rect",
+                  layout: "vertical",
+                  color: "gold",
+                  label: "paypal",
+                  height: 35,
+                }}
+                createOrder={async () => {
+                  try {
+                    const response = await fetch("http://127.0.0.1:5000/pay", {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify({
+                        amount: "1",
+                        currency: "USD",
+                        session_id: Session,
+                      }),
+                    });
+
+                    const orderData = await response.json();
+                    console.log("Order Data:", orderData);
+
+                    if (!orderData || !orderData.order_id) {
+                      throw new Error("No order_id returned from server");
+                    }
+
+                    return orderData.order_id;
+                  } catch (err) {
+                    console.error("PayPal createOrder error:", err);
+                    alert("Failed to create PayPal order. Please try again.");
+                    throw err;
+                  }
+                }}
+                onApprove={async (data, actions) => {
+                  try {
+                    // Capture the order after approval
+                    const details = await actions.order.capture();
+
+                    const response = await fetch(
+                      "http://127.0.0.1:5000/pay/confirm",
+                      {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          session_id: Session,
+                          amount: "1",
+                          currency: "USD",
+                          transaction_id: details.id,
+                        }),
+                      }
+                    );
+
+                    if (response.ok) {
+                      alert(
+                        `Transaction completed by ${details.payer.name.given_name}`
+                      );
+                      setIsSuccessful(true);
+                    } else {
+                      alert("Failed to log the payment.");
+                    }
+                  } catch (err) {
+                    console.error("PayPal approval error:", err);
+                    alert("Payment capture failed. Please try again.");
+                  }
+                }}
+                onError={(err) => {
+                  console.error("PayPal Button Error:", err);
+                  alert("Error during payment process, please try again.");
+                }}
+              />
             </div>
-          )}
+          </PayPalScriptProvider>
         </div>
       </div>
     </div>

@@ -5,7 +5,7 @@ class Payment(db.Model):
     __tablename__="payments"
 
     id=db.Column(db.Integer,primary_key=True)#unique id
-    session_id=db.Column(db.Integer,db.ForeignKey('sessions.id'),nullable=False,unique=True)#one session can only have one payment
+    session_id=db.Column(db.Integer,db.ForeignKey('sessions.id'),nullable=False)#one session can only have one payment
     amount=db.Column(db.Numeric(10,2),nullable=False,default=100.00)#amount paid defaults to 100ksh
     currency=db.Column(db.String(3),default='KES')#currency in ksh
     transaction_id=db.Column(db.String(100),unique=True,nullable=True)# Unique transaction code from M-PESA (like "TC66NVJ4TA")
