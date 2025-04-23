@@ -10,10 +10,13 @@ from models.session import Session
 from models.payment import Payment
 from models.response import Response
 from models.questions import Question
+from models.admin import Admin
 import os
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import requests
+from paypalpayment import create_order, get_access_token
+
 
 load_dotenv()
 
@@ -27,14 +30,11 @@ app.config['SESSION_COOKIE_SECURE'] =  False
 app.config['SESSION_PERMANENT'] = False
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)
 
-PAYPAL_CLIENT_ID =  os.getenv('PAYPAL_CLIENT_ID')
-PAYPAL_SECRET =  os.getenv('PAYPAL_SECRET')
-PAYPAL_API_URL =  os.getenv('PAYPAL_API_URL')  # Change to live PayPal URL in production
 
 CORS(app, supports_credentials=True, resources={r"/*": {
     "origins": "http://localhost:5173",
     "allow_headers": ["Content-Type", "Authorization"],
-    "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     # "supports_credentials": True
 }})
 
@@ -43,63 +43,9 @@ migrate = Migrate(app, db)
 bcrypt = Bcrypt(app)
 api = Api(app)
 
-def get_paypal_access_token():
-    response = requests.post(
-        f"{PAYPAL_API_URL}/v1/oauth2/token",
-        auth=(PAYPAL_CLIENT_ID, PAYPAL_SECRET),
-        data={"grant_type": "client_credentials"},
-    )
-    return response.json().get("access_token")
-@app.route("/api/orders", methods=["POST"])
-def create_order():
-    data = request.get_json()
-    access_token = get_paypal_access_token()
-    
-    order_payload = {
-        "intent": "CAPTURE",
-        "purchase_units": [
-            {
-                "amount": {
-                    "currency_code": "KES",  
-                    "value": "100.00",
-                },
-                "description": f"{data.get('membership')} Membership",
-            }
-        ],
-    }
-
-    response = requests.post(
-        f"{PAYPAL_API_URL}/v2/checkout/orders",
-        json=order_payload,
-        headers={
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {access_token}",
-        },
-    )
-    return jsonify(response.json())
-
-@app.route("/api/orders/<orderID>/capture", methods=["POST"])
-def capture_order(orderID):
-    access_token = get_paypal_access_token()
-    
-    response = requests.post(
-        f"{PAYPAL_API_URL}/v2/checkout/orders/{orderID}/capture",
-        headers={
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {access_token}",
-        },
-    )
-    
-    order_data = response.json()
-    if order_data.get("status") == "COMPLETED":
-        # Here, save the payment info to a database (not shown)
-        return jsonify({"success": True, "message": "Payment captured successfully"})
-    
-    return jsonify({"success": False, "message": "Payment capture failed"}), 400
 @app.route('/api')
 def index():
     return '<h1>Index of Usichizi</h1>'
-
 
 class RegisterUser(Resource):
     def get(self):
@@ -109,7 +55,6 @@ class RegisterUser(Resource):
     def post(self):
         try:
             data = request.get_json()
-            print("Received data:", data)  
 
             # Ensure required fields exist
             required_fields = ["gender", "age_group", "relationship_status"]
@@ -157,6 +102,47 @@ class UserById(Resource):
         response = make_response(jsonify(user.to_dict()))
          
         return response
+
+class AdminRegister(Resource):
+    def post(self):
+        try:
+            data = request.get_json()
+            if "username" not in data or "password" not in data:
+                return {"message": "Missing field: username or password"}, 400
+
+            if Admin.query.filter_by(username=data["username"]).first():
+                return {"message": "Admin already exists"}, 400
+
+            new_admin = Admin(username=data["username"])
+            new_admin.set_password(data["password"])
+
+            db.session.add(new_admin)
+            db.session.commit()
+
+            return {"message": "Admin created"}, 201
+        except Exception as e:
+            return {"message": "Error creating admin", "error": str(e)}, 500
+
+class AdminLogin(Resource):
+    def post(self):
+        try:
+            data = request.get_json()
+            admin = Admin.query.filter_by(username=data.get("username")).first()
+
+            if admin and admin.check_password(data.get("password")):
+                session["admin_id"] = admin.id
+                return {"message": "Login successful", "admin": admin.to_dict()}, 200
+            return {"message": "Invalid credentials"}, 401
+        except Exception as e:
+            return {"message": "Login failed", "error": str(e)}, 500
+
+class AdminLogout(Resource):
+    def post(self):
+        try:
+            session.pop("admin_id", None)  
+            return {"message": "Logout successful"}, 200
+        except Exception as e:
+            return {"message": "Logout failed", "error": str(e)}, 500
 
 class Questions(Resource):
     def get(self):
@@ -248,14 +234,173 @@ class Sessions(Resource):
         except Exception as e:
             return {"message": "Error creating session", "error": str(e)}, 500
 
+
+class SessionById(Resource):
+    def get(self, session_id):
+        session = Session.query.filter_by(id=session_id).first()
+        if not session:
+            return {"message": "Session not found"}, 404
+        return jsonify(session.to_dict())
+    def patch(self, session_id):
+        data = request.get_json()
+        paid_status = data.get("paid")
+
+        if paid_status is None:
+            return {"error": "Missing 'paid' in request body"}, 400
+
+        session = db.session.get(Session, session_id)
+
+        if not session:
+            return {"error": "Session not found"}, 404
+
+        session.paid = paid_status
+        db.session.commit()
+
+        return {"message": "Session updated", "session_id": session.id, "paid": session.paid}, 200
+
+
+@app.route("/pay", methods=["POST"])
+def pay():
+    try:
+        data = request.get_json()
+
+        amount = data.get("amount", "0.77")
+        currency = data.get("currency", "USD")
+        session_id = data.get("session_id")
+        
+        if not session_id:
+            return jsonify({"error": "Session ID is required"}), 400
+
+        # Create PayPal order
+        order_response = create_order(amount, currency)
+        order_id = order_response["order_id"]
+
+        # Save to database
+        payment = Payment(
+            session_id=session_id,
+            amount=amount,
+            currency=currency,
+            transaction_id=order_id,  
+            status="pending",         
+            created_at=datetime.utcnow()
+        )
+
+        db.session.add(payment)
+        db.session.commit()
+
+        return jsonify(order_response)
+    
+    except Exception as e:
+        print("PayPal Order Creation Error:", str(e))
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/pay/confirm", methods=["POST"])
+def confirm_paypal_payment():
+    try:
+        data = request.get_json()
+
+        session_id = data.get("session_id")
+        amount = data.get("amount", "100.00")
+        currency = data.get("currency", "KES")
+        transaction_id = data.get("transaction_id")  
+        payment_date = datetime.utcnow()
+
+        if not session_id or not transaction_id:
+            print("Missing fields:", session_id, transaction_id)
+            return jsonify({"error": "Missing session_id or transaction_id"}), 400
+
+        # Find the existing pending payment
+        existing_payment = Payment.query.filter_by(session_id=session_id).first()
+
+        if existing_payment:
+            if existing_payment.status == "completed":
+                return jsonify({"error": "Payment already completed for this session"}), 400
+            
+            # Update the existing pending payment
+            existing_payment.transaction_id = transaction_id
+            existing_payment.status = "completed"
+            existing_payment.payment_date = payment_date
+            db.session.commit()
+
+            return jsonify({"message": "Payment confirmed and updated successfully"})
+        
+       
+        payment = Payment(
+            session_id=session_id,
+            amount=amount,
+            currency=currency,
+            transaction_id=transaction_id,
+            status="completed",
+            payment_date=payment_date,
+            created_at=datetime.utcnow()
+        )
+
+        db.session.add(payment)
+        db.session.commit()
+
+        return jsonify({"message": "Payment recorded successfully"})
+
+    except Exception as e:
+        print("Payment Confirmation Error:", str(e))
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/admin/stats")
+def admin_stats():
+    try:
+        # Payments
+        total_payments = Payment.query.count()
+        completed_payments = Payment.query.filter_by(status='completed').count()
+        pending_payments = Payment.query.filter_by(status='pending').count()
+
+        # Sessions
+        total_sessions = Session.query.count()
+        paid_sessions = Session.query.filter_by(paid=True).count()
+        unpaid_sessions = Session.query.filter_by(paid=False).count()
+        completed_sessions = Session.query.filter(Session.completed_at.isnot(None)).count()
+
+        # Severity Categories
+        severity_data = {
+            "Normal": 0,
+            "Mild": 0,
+            "Moderate": 0,
+            "Severe": 0
+        }
+        sessions = Session.query.all()
+        for sess in sessions:
+            result = sess.get_assessment_result()
+            if result and result['severity'] in severity_data:
+                severity_data[result['severity']] += 1
+
+        return jsonify({
+            "payments": {
+                "total": total_payments,
+                "completed": completed_payments,
+                "pending": pending_payments
+            },
+            "sessions": {
+                "total": total_sessions,
+                "paid": paid_sessions,
+                "unpaid": unpaid_sessions,
+                "completed": completed_sessions
+            },
+            "severity_distribution": severity_data
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500 
+
+
 api.add_resource(RegisterUser, '/api/user')
 api.add_resource(GetSessionUser, "/sessionuser")
-api.add_resource(UserById, '/api/<int:id>/user')
+api.add_resource(UserById, '/api/<int:id>/user')    
+api.add_resource(AdminRegister, "/api/admin/register")
+api.add_resource(AdminLogin, "/api/admin/login")
+api.add_resource(AdminLogout, "/api/admin/logout")
 api.add_resource(Questions, '/api/questions')
 api.add_resource(Responses, '/api/responses')
 api.add_resource(ResponseById, '/api/<int:session_id>/response')
 api.add_resource(Sessions, '/api/sessions')
-# api.add_resource(SessionById, '/api/<int:user_id>/session')
+api.add_resource(SessionById, '/api/<int:session_id>/session')
+
 
 if __name__ == '__main__':
     app.run(debug=True)

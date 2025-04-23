@@ -19,20 +19,6 @@ class Session(db.Model):
     responses = db.relationship('Response', back_populates='session', cascade='all, delete-orphan')
 
 
-
-
-    def to_dict(self):
-        return {
-            "id":self.id,
-            "user_id":self.user_id,
-            "score":self.score,
-            "paid":self.paid,
-            "result_sent":self.result_sent,
-            "created_at":self.created_at.isoformat() if self.created_at else None,
-            "completed_at":self.completed_at.utcnow() if self.completed_at else None,
-        }
-    
-    
     
     def calculate_scores(self):
         """Calculate total percentage score per category."""
@@ -69,9 +55,6 @@ class Session(db.Model):
             category: (category_scores[category] / category_max_scores[category]) * 100
             for category in category_scores
         }
-
-        print(f"Calculated category scores: {category_percentages}") 
-
         return category_percentages
 
 
@@ -121,3 +104,18 @@ class Session(db.Model):
         self.paid=True  
 
         
+    def to_dict(self):
+        result = self.get_assessment_result()
+
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "score": self.score,
+            "paid": self.paid,
+            "result_sent": self.result_sent,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "completed_at": self.completed_at.isoformat() if self.completed_at else None,
+            "category": result["category"] if result else None,
+            "severity": result["severity"] if result else None,
+            "message": result["message"] if result else None,
+        }

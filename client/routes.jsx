@@ -1,8 +1,9 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "./src/App";
 import Questions from "./src/Questions/Questions";
-import Register from "./src/Register/Register";
 import Payment from "./src/Payment/Payment";
+import Results  from "./src/Results";
+import AdminDashboard from "./src/Admin/AdminDashboard";
 
 const routes = createBrowserRouter([
     {
@@ -14,12 +15,16 @@ const routes = createBrowserRouter([
         element:<Questions />
     },
     {
-      path:"/register",
-      element:<Register />
+      path:"/results",
+      element:<Results />
     },
     {
         path:"/payment",
         element:<Payment />
+    },
+    {
+        path:"/admin",
+        element:<AdminDashboard />
     },
 
     {
