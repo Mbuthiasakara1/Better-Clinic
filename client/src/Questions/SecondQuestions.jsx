@@ -201,20 +201,21 @@ function SecondQuestions({ handleResponse }) {
         formData,
         { withCredentials: true }
       );
-      const userId = userResponse.data.user_id;
-      setUser(userId);
+          const userId = userResponse.data.user_id;
+      setUser(userId); 
+
 
       const sessionResponse = await axios.post(
         "http://127.0.0.1:5000/api/sessions",
         {
-          user_id: userId,
+          user_id: userId, 
           score: 0,
           paid: false,
           result_sent: false,
         }
       );
-      const newSessionId = sessionResponse.data.id;
-      setSession(newSessionId);
+      const newSessionId = sessionResponse.data.id; 
+      setSession(newSessionId); 
       
       // Wait a moment before calling handleResponse to ensure state updates
       setTimeout(() => {
