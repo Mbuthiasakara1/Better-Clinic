@@ -33,7 +33,7 @@ function DashBoard({ theme, toggleTheme, handleLogout }) {
         { label: "Total", count: sessions.total },
         { label: "Paid", count: sessions.paid },
         { label: "Unpaid", count: sessions.unpaid },
-        { label: "Completed", count: sessions.completed },
+        // { label: "Completed", count: sessions.completed },
       ]);
       const severityList = Object.entries(severity_distribution).map(
         ([label, count]) => ({ label, count })

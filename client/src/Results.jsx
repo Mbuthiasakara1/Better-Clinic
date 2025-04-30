@@ -11,9 +11,9 @@ const Results = () => {
   const [results, setResults] = useState("");
 
   useEffect(() => {
-    const duration = 5000; // total duration in ms
-    const intervalDuration = 50; // how often we update progress
-    const steps = duration / intervalDuration; // total number of steps
+    const duration = 5000; 
+    const intervalDuration = 50; 
+    const steps = duration / intervalDuration; 
     const increment = 100 / steps;
 
     const interval = setInterval(() => {
@@ -107,7 +107,7 @@ const Results = () => {
               <a
                 href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
                   results
-                )}&url=https://yourapp.com`}
+                )}&url=http://localhost:5173`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-black text-white px-4 py-2 rounded-xl hover:bg-gray-800 transition"
@@ -122,6 +122,12 @@ const Results = () => {
               >
                 Share via SMS
               </a>
+              {/* <a
+                href={`sms:?&body=${encodeURIComponent(results)}`}
+                className="bg-gray-700 text-white px-4 py-2 rounded-xl hover:bg-gray-800 transition"
+              >
+                Share via TikTok
+              </a> */}
             </div>
           </>
         )}

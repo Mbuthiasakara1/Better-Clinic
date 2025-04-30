@@ -4,143 +4,139 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import SecondQuestions from "./SecondQuestions";
 import useStore from "../../Store";
-import lottie from "lottie-web"; 
-import loader from "../assets/loader.json"
-import Emojis from "./Emojis"
-
+import lottie from "lottie-web";
+import loader from "../assets/loader.json";
+import Emojis from "./Emojis";
+import { toast } from "react-hot-toast";
 
 function Questions() {
- const [questions, setQuestions] = useState([]);
- const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
- const [selectedOption, setSelectedOption] = useState(null);
- const [showFinalStep, setShowFinalStep] = useState(false);
- const [showSecondQuestions, setShowSecondQuestions] = useState(false);
- const [responses, setResponses] = useState([]);
- const [isSuccessful, setIsSuccessful] = useState(false);
- const [isloading, setIsLoading] = useState(false);
- const [formData, setFormData] = useState({
-   session_id: "",
-   question_id: "",
-   response_value: [],
- });
- const [animationInstance,setAnimationInstance] = useState(null)
- const navigate = useNavigate();
- const { Session, setSession, user } = useStore();
- const user_id = localStorage.getItem("user_id");
- const progressRef = useRef(null);
- // Lottie animation setup
+  const [questions, setQuestions] = useState([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [showFinalStep, setShowFinalStep] = useState(false);
+  const [showSecondQuestions, setShowSecondQuestions] = useState(false);
+  const [responses, setResponses] = useState([]);
+  const [isSuccessful, setIsSuccessful] = useState(false);
+  const [isloading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    session_id: "",
+    question_id: "",
+    response_value: [],
+  });
+  const [animationInstance, setAnimationInstance] = useState(null);
+  const navigate = useNavigate();
+  const { Session, setSession, user } = useStore();
+  const user_id = localStorage.getItem("user_id");
+  const progressRef = useRef(null);
+  // Lottie animation setup
 
+  // Fetch questions from API
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+      setIsSuccessful(false);
+    }, 60000);
+    axios
+      .get("http://127.0.0.1:5000/api/questions")
+      .then((resp) => {
+        if (resp.data.length > 0) {
+          setQuestions(resp.data);
+          setIsSuccessful(true);
+        } else {
+          setIsSuccessful(false);
+        }
+        setIsLoading(false);
+        clearTimeout(timer);
+      })
+      .catch((error) => {
+        setIsSuccessful(false);
+        setIsLoading(true); // Keep loading animation if API fails
+        console.error("Error fetching questions:", error);
+      });
+    return () => clearTimeout(timer);
+  }, []);
 
-
- // Fetch questions from API
- useEffect(() => {
-   const timer = setTimeout(() => {
-     setIsLoading(false);
-     setIsSuccessful(false);
-   }, 60000);
-   axios
-     .get("http://127.0.0.1:5000/api/questions")
-     .then((resp) => {
-       if (resp.data.length > 0) {
-         setQuestions(resp.data);
-         setIsSuccessful(true);
-       } else {
-         setIsSuccessful(false);
-       }
-       setIsLoading(false);
-       clearTimeout(timer);
-     })
-     .catch((error) => {
-       setIsSuccessful(false);
-       setIsLoading(true); // Keep loading animation if API fails
-       console.error("Error fetching questions:", error);
-     });
-   return () => clearTimeout(timer);
- }, []);
-
- // Reset selected option when moving to a new question
- useEffect(() => {
-   setSelectedOption(null);
- }, [currentQuestionIndex]);
- const getButtonStyles = (index, isSelected) => {
-   const styles = [
-     {
-       selected: "bg-blue-500 text-white",
-       unselected: "border-blue-500 hover:bg-blue-500",
-     },
-     {
-       selected: "bg-yellow-500 text-white",
-       unselected: "border-yellow-500 hover:bg-yellow-500",
-     },
-     {
-       selected: "bg-purple-500 text-white",
-       unselected: "border-purple-500 hover:bg-purple-500",
-     },
-     {
-       selected: "bg-green-500 text-white",
-       unselected: "border-green-500 hover:bg-green-500",
-     },
-   ];
-   const style = styles[index % styles.length];
-   return isSelected ? style.selected : style.unselected;
- };
- const handleOptionClick = (index) => {
-   const selectedQuestion = questions[currentQuestionIndex];
-   setSelectedOption(index);
-   setFormData({
-     ...formData,
-     session_id: Session,
-     question_id: selectedQuestion.id,
-     response_value: selectedQuestion.options[index].text,
-   });
-   // Append new response instead of replacing existing ones
-   setResponses((prevResponses) => [
-     ...prevResponses,
-     {
-       question_id: selectedQuestion.id,
-       selected_option: selectedQuestion.options[index].text,
-     },
-   ]);
- };
- const handleNextQuestion = async () => {
-   if (currentQuestionIndex === questions.length - 1) {
-     setShowFinalStep(true);
-   } else {
-    const nextIndex =currentQuestionIndex + 1
-    setCurrentQuestionIndex(nextIndex)
-    setSelectedOption(null)
-    //  setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
-    //  setSelectedOption(null);
-
-    
-   }
- };
- const handleMoveBack = () => {
-   if (currentQuestionIndex > 0) {
-    const prevIndex =currentQuestionIndex -1
-     setCurrentQuestionIndex((prevIndex) => prevIndex - 1);
-     setSelectedOption(null);
-   }
- };
- async function handleResponse(sessionId) {
-   const currentSessionId = sessionId || Session;
-   if (!currentSessionId) {
-     console.error("Error: No session ID found before submitting responses.");
-     return;
-   }
-   console.log("Submitting responses with session ID:", currentSessionId);
-   console.log("Responses:", responses);
-   try {
-     await axios.post("http://127.0.0.1:5000/api/responses", {
-       session_id: currentSessionId,
-       responses: responses,
-     });
-     console.log("Responses sent successfully:", responses);
-     navigate('/payment')
-   } catch (error) {
-     console.error("Error submitting responses:", error);
-   }
- }
+  // Reset selected option when moving to a new question
+  useEffect(() => {
+    setSelectedOption(null);
+  }, [currentQuestionIndex]);
+  const getButtonStyles = (index, isSelected) => {
+    const styles = [
+      {
+        selected: "bg-blue-500 text-white",
+        unselected: "border-blue-500 hover:bg-blue-500",
+      },
+      {
+        selected: "bg-yellow-500 text-white",
+        unselected: "border-yellow-500 hover:bg-yellow-500",
+      },
+      {
+        selected: "bg-purple-500 text-white",
+        unselected: "border-purple-500 hover:bg-purple-500",
+      },
+      {
+        selected: "bg-green-500 text-white",
+        unselected: "border-green-500 hover:bg-green-500",
+      },
+    ];
+    const style = styles[index % styles.length];
+    return isSelected ? style.selected : style.unselected;
+  };
+  const handleOptionClick = (index) => {
+    const selectedQuestion = questions[currentQuestionIndex];
+    setSelectedOption(index);
+    setFormData({
+      ...formData,
+      session_id: Session,
+      question_id: selectedQuestion.id,
+      response_value: selectedQuestion.options[index].text,
+    });
+    // Append new response instead of replacing existing ones
+    setResponses((prevResponses) => [
+      ...prevResponses,
+      {
+        question_id: selectedQuestion.id,
+        selected_option: selectedQuestion.options[index].text,
+      },
+    ]);
+  };
+  const handleNextQuestion = async () => {
+    if (currentQuestionIndex === questions.length - 1) {
+      setShowFinalStep(true);
+    } else {
+      const nextIndex = currentQuestionIndex + 1;
+      setCurrentQuestionIndex(nextIndex);
+      setSelectedOption(null);
+      //  setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
+      //  setSelectedOption(null);
+    }
+  };
+  const handleMoveBack = () => {
+    if (currentQuestionIndex > 0) {
+      const prevIndex = currentQuestionIndex - 1;
+      setCurrentQuestionIndex((prevIndex) => prevIndex - 1);
+      setSelectedOption(null);
+    }
+  };
+  async function handleResponse(sessionId) {
+    const currentSessionId = sessionId || Session;
+    if (!currentSessionId) {
+      console.error("Error: No session ID found before submitting responses.");
+      return;
+    }
+    try {
+      await axios.post("http://127.0.0.1:5000/api/responses", {
+        session_id: currentSessionId,
+        responses: responses,
+      });
+      toast.success("Responses submitted successfully!");
+      setTimeout(() => {
+        navigate("/payment");
+      }, 2000); 
+    } catch (error) {
+      console.error("Error submitting responses:", error);
+    }
+  }
 
   return (
     <div className="relative w-screen h-screen flex items-center justify-center px-4 md:px-10 lg:px-20 text-gray-900 dark:text-white overflow-hidden">
@@ -150,18 +146,16 @@ function Questions() {
         alt="Background"
         className="absolute w-full h-full object-cover"
       />
-         
+
       {/* Stronger overlay for better text contrast */}
       <div className="absolute w-full h-full bg-black/40"></div>
-      
+
       <div className="absolute left-1/2 transform -translate-x-1/2 w-[90%] md:w-[70%] lg:w-[60%] text-center px-4 py-10 bg-opacity-50 z-10 h-full rounded-3xl flex justify-center items-center p-4">
         <div className="bg-white shadow-xl rounded-3xl p-8 max-w-md w-full text-center  flex flex-col justify-center">
           {showSecondQuestions ? (
             <SecondQuestions handleResponse={handleResponse} />
           ) : showFinalStep ? (
             <>
-            
-
               <div className="my-4 w-full">
                 <Emojis />
               </div>
@@ -173,13 +167,10 @@ function Questions() {
               </button>
             </>
           ) : isloading ? (
-            <div
-              className=" w-24 h-24 flex justify-center items-center"
-              
-            ></div>
+            <div className=" w-24 h-24 flex justify-center items-center"></div>
           ) : !isSuccessful ? (
             <div className="flex flex-col items-center justify-center">
-              <div className="container w-24 h-24" ></div>
+              <div className="container w-24 h-24"></div>
               <p className="mt-4 text-red-600">
                 Failed to load questions. Please try again later.
               </p>
@@ -223,8 +214,18 @@ function Questions() {
                     disabled={currentQuestionIndex === 0}
                   >
                     {currentQuestionIndex > 0 && (
-                      <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      <svg
+                        className="w-4 h-4 mr-1"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 19l-7-7 7-7"
+                        />
                       </svg>
                     )}
                     Back
@@ -239,15 +240,28 @@ function Questions() {
                     onClick={handleNextQuestion}
                     disabled={selectedOption === null}
                   >
-                    {currentQuestionIndex === questions.length - 1 ? "Finish" : "Next"}
-                    {selectedOption !== null && currentQuestionIndex < questions.length - 1 && (
-                      <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    )}
+                    {currentQuestionIndex === questions.length - 1
+                      ? "Finish"
+                      : "Next"}
+                    {selectedOption !== null &&
+                      currentQuestionIndex < questions.length - 1 && (
+                        <svg
+                          className="w-4 h-4 ml-1"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5l7 7-7 7"
+                          />
+                        </svg>
+                      )}
                   </button>
                 </div>
-                              </div>
+              </div>
             </>
           ) : null}
         </div>

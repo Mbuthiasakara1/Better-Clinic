@@ -2,17 +2,19 @@ from flask import Flask, request, jsonify
 import requests
 from requests.auth import HTTPBasicAuth
 from flask_cors import CORS
-
+from dotenv import load_dotenv
+import os
 app = Flask(__name__)
 CORS(app)
+load_dotenv()
 
-PAYPAL_CLIENT_ID = 'AVYzf04TRxo6ZzBCDYzq9J36DVh934-1WxZBXRfI4Ma0JTNTHMUeq0CP_MaHt1__yl_QkhkKzuCo5S0s'
-PAYPAL_CLIENT_SECRET = 'EN-wtjARFO64igKqq85Yd_Tnz6fwyN2e-y4E6Yx1yzu1CM2kH-HLwyBqVNgGrdNbF9eA7--3mzrfn6ZU'
-PAYPAL_API_BASE = 'https://api-m.sandbox.paypal.com'  # Use live URL in production
+PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID")
+PAYPAL_CLIENT_SECRET = os.getenv("PAYPAL_CLIENT_SECRET")
+PAYPAL_API_URL ="https://api.sandbox.paypal.com"
 
 # Get OAuth2 Access Token
 def fetch_access_token():
-    url = f"{PAYPAL_API_BASE}/v1/oauth2/token"
+    url = f"{PAYPAL_API_URL}/v1/oauth2/token"
     headers = {
         "Accept": "application/json",
         "Accept-Language": "en_US"
@@ -39,7 +41,7 @@ def get_access_token():
 # Function to create a PayPal order
 def create_order(amount="1", currency="USD"):
     access_token = fetch_access_token()
-    url = f"{PAYPAL_API_BASE}/v2/checkout/orders"
+    url = f"{PAYPAL_API_URL}/v2/checkout/orders"
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {access_token}"

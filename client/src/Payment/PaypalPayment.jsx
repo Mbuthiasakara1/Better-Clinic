@@ -4,12 +4,13 @@ import React, { useState } from "react";
 import { PayPalButtons } from "@paypal/react-paypal-js";
 
 const PaypalPayment = () => {
-  const [user, setUser]= useState([])
-  const [message, setMessage]=useState("")
+  const [user, setUser] = useState([]);
+  const [message, setMessage] = useState("");
   return (
     <>
       <div className="paypal-container">
         <PayPalButtons
+          fundingSource="paypal"
           style={{
             shape: "rect",
             layout: "vertical",
@@ -21,7 +22,7 @@ const PaypalPayment = () => {
               if (!user.name || !user.email || !user.membership) {
                 throw new Error("User information is incomplete.");
               }
-              const response = await fetch("http://localhost:5000/api/orders", {
+              const response = await fetch("http://127.0.0.1:5000/api/orders", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
@@ -51,7 +52,7 @@ const PaypalPayment = () => {
           onApprove={async (data, actions) => {
             try {
               const response = await fetch(
-                `http://localhost:5000/api/orders/${data.orderID}/capture`,
+                `http://127.0.0.1:5000/api/orders/${data.orderID}/capture`,
                 {
                   method: "POST",
                   headers: {
@@ -82,7 +83,7 @@ const PaypalPayment = () => {
 
                 // Send the payment data to backend to store it
                 const paymentResponse = await fetch(
-                  "http://localhost:5000/capture-payment",
+                  "http://127.0.0.1:5000/capture-payment",
                   {
                     method: "POST",
                     headers: {
