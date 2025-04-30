@@ -15,7 +15,7 @@ import os
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import requests
-from paypalpayment import create_order, get_access_token
+from paypalpayment import create_order
 
 
 load_dotenv()
@@ -70,7 +70,8 @@ class RegisterUser(Resource):
             db.session.add(new_user)
             db.session.commit()
 
-            session["user_id"] = new_user.id        
+            session["user_id"] = new_user.id  
+           
             return {"message": "User created", "user_id": new_user.id}, 201
         except Exception as e:
             return {"message": "Error creating user", "error": str(e)}, 500

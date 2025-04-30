@@ -75,20 +75,5 @@ def create_order(amount="1", currency="USD"):
     }
 
 
-# Route to create and return PayPal order
-# @app.route("/pay", methods=["POST"])
-# def pay():
-#     try:
-#         data = request.get_json()
-#         amount = data.get("amount", "100.00")
-#         currency = data.get("currency", "KES")
-
-#         order_response = create_order(amount, currency)
-#         return jsonify(order_response)
-#     except Exception as e:
-#         print("PayPal Order Creation Error:", str(e))  # helpful for debugging
-#         return jsonify({"error": str(e)}), 500
-
-
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
