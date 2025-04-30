@@ -27,33 +27,7 @@ function Payment() {
     return true;
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  // if (!validatePhone()) return;
-
-  // try {
-  //   const response = await fetch("http://localhost:3000/users", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify(formData),
-  //   });
-
-  //   if (!response.ok) throw new Error("Network response was not ok.");
-
-  //   const data = await response.json();
-  //   setFormData(data);
-
-  //   setIsSuccessful(true);
-  //   // navigate("/payment");
-  // } catch (error) {
-  //   console.error("Error submitting form:", error);
-  //   alert("Transaction was unsuccessful. Please try again.");
-  // }
-  // };
-
+  
   const initialOptions = {
     clientId:
       "AVYzf04TRxo6ZzBCDYzq9J36DVh934-1WxZBXRfI4Ma0JTNTHMUeq0CP_MaHt1__yl_QkhkKzuCo5S0s",
