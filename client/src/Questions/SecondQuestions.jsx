@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import useStore from "../../Store";
 
+
 function SecondQuestions({ handleResponse }) {
   const [step, setStep] = useState(0);
   const [formData, setFormData] = useState({
@@ -14,6 +15,7 @@ function SecondQuestions({ handleResponse }) {
   const [animating, setAnimating] = useState(false);
   const { Session, setSession, user, setUser } = useStore();
   const navigate = useNavigate();
+ 
 
   const questions = [
     {
@@ -318,6 +320,7 @@ function SecondQuestions({ handleResponse }) {
           )}
         </button>
       </div>
+   
     </>
   );
 }

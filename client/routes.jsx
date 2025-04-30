@@ -4,6 +4,7 @@ import Questions from "./src/Questions/Questions";
 import Payment from "./src/Payment/Payment";
 import Results  from "./src/Results";
 import AdminDashboard from "./src/Admin/AdminDashboard";
+import Interactive from "./src/Questions/Interactive";
 
 const routes = createBrowserRouter([
     {
@@ -22,6 +23,11 @@ const routes = createBrowserRouter([
         path:"/payment",
         element:<Payment />
     },
+    {
+        path:"/interactive",
+        element:<Interactive/>
+    },
+  
     {
         path:"/admin",
         element:<AdminDashboard />

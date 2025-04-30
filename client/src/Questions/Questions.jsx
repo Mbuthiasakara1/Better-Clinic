@@ -136,7 +136,7 @@ function Questions() {
        responses: responses,
      });
      console.log("Responses sent successfully:", responses);
-     navigate('/payment')
+     navigate('/interactive')
    } catch (error) {
      console.error("Error submitting responses:", error);
    }
@@ -247,7 +247,7 @@ function Questions() {
                     )}
                   </button>
                 </div>
-                              </div>
+                </div>
             </>
           ) : null}
         </div>
