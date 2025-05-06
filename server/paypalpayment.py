@@ -39,7 +39,7 @@ def get_access_token():
         return jsonify({"error": str(e)}), 500
 
 # Function to create a PayPal order
-def create_order(amount="1", currency="USD"):
+def create_order(amount="1.99", currency="USD"):
     access_token = fetch_access_token()
     url = f"{PAYPAL_API_URL}/v2/checkout/orders"
     headers = {
@@ -59,10 +59,8 @@ def create_order(amount="1", currency="USD"):
         ]
     }
 
-    print("Order Payload:", order_payload)  # Log the order payload
 
     response = requests.post(url, json=order_payload, headers=headers)
-    print("PayPal Response:", response.json())  # Log the PayPal response
     response.raise_for_status()
 
     order_data = response.json()
@@ -75,21 +73,6 @@ def create_order(amount="1", currency="USD"):
         "order_id": order_data["id"],
         "approval_url": approval_url
     }
-
-
-# Route to create and return PayPal order
-# @app.route("/pay", methods=["POST"])
-# def pay():
-#     try:
-#         data = request.get_json()
-#         amount = data.get("amount", "100.00")
-#         currency = data.get("currency", "KES")
-
-#         order_response = create_order(amount, currency)
-#         return jsonify(order_response)
-#     except Exception as e:
-#         print("PayPal Order Creation Error:", str(e))  # helpful for debugging
-#         return jsonify({"error": str(e)}), 500
 
 
 if __name__ == '__main__':

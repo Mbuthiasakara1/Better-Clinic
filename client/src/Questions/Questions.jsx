@@ -23,12 +23,9 @@ function Questions() {
     question_id: "",
     response_value: [],
   });
-  const [animationInstance, setAnimationInstance] = useState(null);
   const navigate = useNavigate();
-  const { Session, setSession, user } = useStore();
-  const progressRef = useRef(null);
-  // Lottie animation setup
-
+  const { Session } = useStore();
+  
   // Fetch questions from API
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -50,97 +47,92 @@ function Questions() {
       .catch((error) => {
         setIsSuccessful(false);
         setIsLoading(true); // Keep loading animation if API fails
-        console.error("Error fetching questions:", error);
+        
       });
     return () => clearTimeout(timer);
   }, []);
 
-  // Reset selected option when moving to a new question
-  useEffect(() => {
-    setSelectedOption(null);
-  }, [currentQuestionIndex]);
-  const getButtonStyles = (index, isSelected) => {
-    const styles = [
-      {
-        selected: "bg-blue-500 text-white",
-        unselected: "border-blue-500 hover:bg-blue-500",
-      },
-      {
-        selected: "bg-yellow-500 text-white",
-        unselected: "border-yellow-500 hover:bg-yellow-500",
-      },
-      {
-        selected: "bg-purple-500 text-white",
-        unselected: "border-purple-500 hover:bg-purple-500",
-      },
-      {
-        selected: "bg-green-500 text-white",
-        unselected: "border-green-500 hover:bg-green-500",
-      },
-    ];
-    const style = styles[index % styles.length];
-    return isSelected ? style.selected : style.unselected;
-  };
-  const handleOptionClick = (index) => {
-    const selectedQuestion = questions[currentQuestionIndex];
-    setSelectedOption(index);
-    setFormData({
-      ...formData,
-      session_id: Session,
-      question_id: selectedQuestion.id,
-      response_value: selectedQuestion.options[index].text,
-    });
-    // Append new response instead of replacing existing ones
-    setResponses((prevResponses) => [
-      ...prevResponses,
-      {
-        question_id: selectedQuestion.id,
-        selected_option: selectedQuestion.options[index].text,
-      },
-    ]);
-  };
-  const handleNextQuestion = async () => {
-    if (currentQuestionIndex === questions.length - 1) {
-      setShowFinalStep(true);
-    } else {
-      const nextIndex = currentQuestionIndex + 1;
-      setCurrentQuestionIndex(nextIndex);
-      setSelectedOption(null);
-      //  setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
-      //  setSelectedOption(null);
-    }
-  };
-  const handleMoveBack = () => {
-    if (currentQuestionIndex > 0) {
-      const prevIndex = currentQuestionIndex - 1;
-      setCurrentQuestionIndex((prevIndex) => prevIndex - 1);
-      setSelectedOption(null);
-    }
-  };
-  async function handleResponse(sessionId) {
-    const currentSessionId = sessionId || Session;
-    if (!currentSessionId) {
-      console.error("Error: No session ID found before submitting responses.");
-      return;
-    }
-    try {
-      await axios.post("http://127.0.0.1:5000/api/responses", {
-        session_id: currentSessionId,
-        responses: responses,
-      });
-      toast.success("Responses submitted successfully!");
-      setTimeout(() => {
-        navigate("/payment");
-      }, 2000); 
-    } catch (error) {
-      console.error("Error submitting responses:", error);
-    }
-  }
+ // Reset selected option when moving to a new question
+ useEffect(() => {
+   setSelectedOption(null);
+ }, [currentQuestionIndex]);
+ const getButtonStyles = (index, isSelected) => {
+   const styles = [
+     {
+       selected: "bg-blue-500 text-white",
+       unselected: "border-blue-500 hover:bg-blue-500",
+     },
+     {
+       selected: "bg-yellow-500 text-white",
+       unselected: "border-yellow-500 hover:bg-yellow-500",
+     },
+     {
+       selected: "bg-purple-500 text-white",
+       unselected: "border-purple-500 hover:bg-purple-500",
+     },
+     {
+       selected: "bg-green-500 text-white",
+       unselected: "border-green-500 hover:bg-green-500",
+     },
+   ];
+   const style = styles[index % styles.length];
+   return isSelected ? style.selected : style.unselected;
+ };
+ const handleOptionClick = (index) => {
+   const selectedQuestion = questions[currentQuestionIndex];
+   setSelectedOption(index);
+   setFormData({
+     ...formData,
+     session_id: Session,
+     question_id: selectedQuestion.id,
+     response_value: selectedQuestion.options[index].text,
+   });
+   // Append new response instead of replacing existing ones
+   setResponses((prevResponses) => [
+     ...prevResponses,
+     {
+       question_id: selectedQuestion.id,
+       selected_option: selectedQuestion.options[index].text,
+     },
+   ]);
+ };
+ const handleNextQuestion = async () => {
+   if (currentQuestionIndex === questions.length - 1) {
+     setShowFinalStep(true);
+   } else {
+    const nextIndex =currentQuestionIndex + 1
+    setCurrentQuestionIndex(nextIndex)
+    setSelectedOption(null)
+
+    
+   }
+ };
+ const handleMoveBack = () => {
+   if (currentQuestionIndex > 0) {
+    const prevIndex =currentQuestionIndex -1
+     setCurrentQuestionIndex((prevIndex) => prevIndex - 1);
+     setSelectedOption(null);
+   }
+ };
+ async function handleResponse(sessionId) {
+   const currentSessionId = sessionId || Session;
+   if (!currentSessionId) {
+     return;
+   }
+   try {
+     await axios.post("http://127.0.0.1:5000/api/responses", {
+       session_id: currentSessionId,
+       responses: responses,
+     });
+     navigate('/interactive')
+   } catch (error) {
+     toast.error("Error submitting responses:", error);
+   }
+ }
 
   return (
     <div className="relative w-screen h-screen flex items-center justify-center px-4 md:px-10 lg:px-20 text-gray-900 dark:text-white overflow-hidden">
       <img
-        // className="absolute w-full h-full object-cover opacity-90"
         src="/assets/bg.jpeg"
         alt="Background"
         className="absolute w-full h-full object-cover"
@@ -260,7 +252,7 @@ function Questions() {
                       )}
                   </button>
                 </div>
-              </div>
+                </div>
             </>
           ) : null}
         </div>

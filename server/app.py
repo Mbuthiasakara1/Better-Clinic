@@ -23,6 +23,7 @@ import requests
 from paypalpayment import create_order
 from base64 import b64encode
 from base64 import b64encode
+import re
 load_dotenv()
 
 app = Flask(__name__)
@@ -92,7 +93,8 @@ class RegisterUser(Resource):
             db.session.add(new_user)
             db.session.commit()
 
-            session["user_id"] = new_user.id        
+            session["user_id"] = new_user.id  
+           
             return {"message": "User created", "user_id": new_user.id}, 201
         except Exception as e:
             return {"message": "Error creating user", "error": str(e)}, 500
@@ -299,7 +301,7 @@ def pay():
     try:
         data = request.get_json()
 
-        amount = data.get("amount", "0.77")
+        amount = data.get("amount", "1.99")
         currency = data.get("currency", "USD")
         session_id = data.get("session_id")
         
@@ -472,14 +474,21 @@ def payment_prompt():
         }
 
         data = request.get_json()
-        phone_number = data.get("phone_number")
+        print("recieved data from input", data)
+        phone_number = re.sub(r'\D', '', data.get("phone_number"))
         session_id = data.get("session_id")
+        print("Parsed phone_number:", phone_number)
+        print("Parsed session_id:", session_id)
 
         if not phone_number or not session_id:
             return jsonify({"error": "Phone number and session ID are required"}), 400
 
         timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
         passkey = os.getenv("passkey")
+        if not passkey:
+            print("⚠️ Passkey is missing in env")
+        else:
+            print("Passkey exists")
         shortcode = "5552258"
         
         data_to_encode = shortcode + passkey + timestamp
@@ -500,7 +509,10 @@ def payment_prompt():
         }
 
         url = "https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
+        # print("Sending payload:", json.dumps(payload, indent=2))
         response = requests.post(url, headers=headers, json=payload, timeout=30)
+        # print("Safaricom API response status:", response.status_code)
+        # print("Safaricom API response text:", response.text)
         res_data = response.json()
 
         transaction_id = res_data.get("CheckoutRequestID")
@@ -579,7 +591,7 @@ def payment_callback():
         else:
             payment.status = "failed"
 
-        # Ensure SQLAlchemy tracks changes
+        
         db.session.add(payment)
         db.session.commit()
         return jsonify({"message": "Payment status updated"}), 200
@@ -588,6 +600,34 @@ def payment_callback():
         db.session.rollback()
         return jsonify({"error": "Server error updating payment"}), 500
 
+@app.route('/payment_status', methods=['POST'])
+def payment_status():
+    try:
+        # Get the transaction_id from the request body
+        data = request.get_json()
+        transaction_id = data.get('transaction_id')
+        
+        if not transaction_id:
+            return jsonify({"error": "Transaction ID is required"}), 400
+
+        # Query the database for the payment record
+        payment = Payment.query.filter_by(transaction_id=transaction_id).first()
+        
+        if not payment:
+            return jsonify({"error": "Payment not found"}), 404
+
+        # Return the payment status in the response
+        return jsonify({
+            "status": payment.status,  # The current status of the payment (e.g., "pending", "completed", "failed")
+            "amount": payment.amount,
+            "currency": payment.currency,
+            "transaction_id": payment.transaction_id,
+            "payment_date": payment.payment_date.strftime('%Y-%m-%d %H:%M:%S') if payment.payment_date else None,
+        }), 200
+
+    except Exception as e:
+        # Catch any other errors
+        return jsonify({"error": f"Error fetching payment status: {str(e)}"}), 500
 
 
 api.add_resource(RegisterUser, '/api/user')

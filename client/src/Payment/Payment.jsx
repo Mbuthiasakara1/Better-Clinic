@@ -14,7 +14,7 @@ function Payment() {
   const [isSuccessful, setIsSuccessful] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
-  const { Session} = useStore();
+  const { Session } = useStore();
   const navigate = useNavigate();
   const storedSessionId = Session || sessionStorage.getItem("session_id");
 
@@ -26,9 +26,10 @@ function Payment() {
     return true;
   };
 
+  const clientId = import.meta.env.VITE_PAYPAL_CLIENT_ID;
+  console.log(clientId);
   const initialOptions = {
-    clientId:
-      "AWpDWEI5qM9CRjviYOjGYIqbozIo9qgLdDjhbeIpISjZfgS0ot1qKBau2-rlEfN1Z89G0gt45CTeFiSA",
+    clientId: clientId,
     currency: "USD",
     intent: "capture",
     "enable-funding": "paypal,card",
@@ -40,29 +41,44 @@ function Payment() {
         .patch(`http://127.0.0.1:5000/api/${storedSessionId}/session`, {
           paid: true,
         })
-        // .then(() => {
-        //   setTimeout(() => {
-        //     navigate("/results");
-        //   }, 2000);
-        // })
+
         .catch((err) => {
-          console.error("Failed to update session:", err);
+          toast.error("Failed to update session:", err);
         });
     }
   }, [isSuccessful, storedSessionId]);
 
-
   async function make_payment() {
     try {
-      const res = await axios.post("http://127.0.0.1:5000/make_payment", {
-        phone_number: phone_number,
-        session_id: storedSessionId,
-      });
+      const res = await axios.post(
+        "http://127.0.0.1:5000/make_payment",
+        {
+          phone_number: phone_number,
+          session_id: storedSessionId,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      if (res.status === 200) {
-        setIsSuccessful(true);
-      } else {
-        throw new Error("Error making payment");
+      const { transaction_id } = res.data;
+
+      if (transaction_id) {
+        const paymentStatusRes = await axios.post(
+          "http://127.0.0.1:5000/payment_status",
+          { transaction_id },
+          { headers: { "Content-Type": "application/json" } }
+        );
+
+        const { status } = paymentStatusRes.data;
+        if (status === "completed") {
+          setIsSuccessful(true);
+        } else {
+          toast.error("Payment not completed successfully. Please try again.");
+          setHasError(true);
+        }
       }
     } catch (err) {
       toast.error("M-Pesa payment failed. Try again.");
@@ -142,7 +158,7 @@ function Payment() {
                             "Content-Type": "application/json",
                           },
                           body: JSON.stringify({
-                            amount: "1",
+                            amount: "1.99",
                             currency: "USD",
                             session_id: storedSessionId,
                           }),
@@ -177,7 +193,7 @@ function Payment() {
                           },
                           body: JSON.stringify({
                             session_id: storedSessionId,
-                            amount: "1",
+                            amount: "1.99",
                             currency: "USD",
                             transaction_id: details.id,
                           }),

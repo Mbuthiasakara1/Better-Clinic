@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import useStore from "../../Store";
+import toast from "react-hot-toast";
+
 
 function SecondQuestions({ handleResponse }) {
   const [step, setStep] = useState(0);
@@ -15,6 +17,7 @@ function SecondQuestions({ handleResponse }) {
   const [animating, setAnimating] = useState(false);
   const { Session, setSession, user, setUser } = useStore();
   const navigate = useNavigate();
+ 
 
   const questions = [
     {
@@ -246,7 +249,7 @@ function SecondQuestions({ handleResponse }) {
         handleResponse(newSessionId);
       }, 100);
     } catch (error) {
-      console.error("Error in session creation", error);
+      toast.error("Error in session creation", error);
     }
   };
 
@@ -381,6 +384,7 @@ function SecondQuestions({ handleResponse }) {
           )}
         </button>
       </div>
+   
     </>
   );
 }
