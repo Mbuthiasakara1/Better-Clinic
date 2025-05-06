@@ -1,4 +1,3 @@
-// src/components/FlashMessage.js
 import React from "react";
 import { Card, CardContent, Typography, Button } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -8,44 +7,56 @@ const FlashMessage = ({ type = "success", onAction }) => {
   const isSuccess = type === "success";
 
   return (
-    <div
-      className={`min-h-screen flex items-center justify-center ${
-        isSuccess ? "bg-green-500" : "bg-red-500"
-      } transition-all`}
-    >
-      <Card
-        className="w-[90%] sm:w-96 max-w-sm shadow-2xl rounded-2xl"
-        style={{ backgroundColor: "transparent", boxShadow: "none" }}
-      >
-        <CardContent className="flex flex-col items-center text-center space-y-6 text-white">
-          {isSuccess ? (
-            <CheckCircleIcon sx={{ fontSize: 80 }} />
-          ) : (
-            <CancelIcon sx={{ fontSize: 80 }} />
-          )}
-
-          <Typography variant="h5" className="font-bold uppercase">
-            {isSuccess ? "Success" : "Failed"}
-          </Typography>
-
-          <Typography variant="body1">
-            {isSuccess
-              ? "Your payment has been processed. Check your email for your receipt."
-              : "Your payment was not successfully processed. Please contact customer support or try again."}
-          </Typography>
-
-          <Button
-            variant="contained"
-            color="inherit"
-            className={`rounded-full px-6 py-2 font-semibold text-${
-              isSuccess ? "green" : "red"
-            }-600`}
-            onClick={onAction}
+    <div className="relative w-screen h-screen flex items-center justify-center px-4 md:px-10 lg:px-20 text-gray-900 dark:text-white overflow-hidden">
+      <img
+        className="absolute w-full h-full object-cover opacity-100"
+        src="/assets/bg.jpeg"
+        alt="Background"
+      />
+      <div className="absolute left-1/2 transform -translate-x-1/2 w-[90%] md:w-[70%] lg:w-[60%] text-center px-4 py-10 bg-opacity-50 z-10 h-full rounded-3xl flex justify-center items-center p-4">
+        <div
+          className={`w-full max-w-xs shadow-lg rounded-xl transition-transform duration-300 ease-in-out ${
+            isSuccess ? "bg-green-600" : "bg-red-600"
+          }`}
+        >
+          <Card
+            className="w-full"
+            style={{
+              backgroundColor: "transparent",
+              boxShadow: "none",
+            }}
           >
-            {isSuccess ? "Continue" : "Try Again"}
-          </Button>
-        </CardContent>
-      </Card>
+            <CardContent className="flex flex-col items-center text-center space-y-8 p-5 text-white">
+              {isSuccess ? (
+                <CheckCircleIcon sx={{ fontSize: 80 }} />
+              ) : (
+                <CancelIcon sx={{ fontSize: 80 }} />
+              )}
+
+              <Typography variant="h6" className="font-bold uppercase">
+                {isSuccess ? "Success" : "Failed"}
+              </Typography>
+
+              <div className="mb-6">
+                <Typography variant="body2">
+                  {isSuccess
+                    ? "Payment processed."
+                    : "Payment failed. Please try again."}
+                </Typography>
+              </div>
+
+              <Button
+                variant="contained"
+                sx={{ color: "black", backgroundColor: "white" }}
+                onClick={onAction}
+                className="rounded-full px-6 py-2 font-semibold m-4"
+              >
+                {isSuccess ? "Continue" : "Try Again"}
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 };

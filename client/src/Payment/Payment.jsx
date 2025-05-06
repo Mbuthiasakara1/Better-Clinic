@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import { MuiTelInput } from "mui-tel-input";
 import React, { useEffect, useState } from "react";
@@ -11,13 +10,13 @@ import { toast } from "react-hot-toast";
 import FlashMessage from "./Flashmessages";
 
 function Payment() {
-  const { formData, setFormData } = useStore();
   const [phone_number, setPhoneNumber] = useState("");
   const [isSuccessful, setIsSuccessful] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
-  const { Session, setSession, user } = useStore();
+  const { Session} = useStore();
   const navigate = useNavigate();
+  const storedSessionId = Session || sessionStorage.getItem("session_id");
 
   const validatePhone = () => {
     if (!phone_number || phone_number.length < 10) {
@@ -36,28 +35,28 @@ function Payment() {
   };
 
   useEffect(() => {
-    if (isSuccessful) {
+    if (isSuccessful && storedSessionId) {
       axios
-        .patch(`http://127.0.0.1:5000/api/${Session}/session`, {
+        .patch(`http://127.0.0.1:5000/api/${storedSessionId}/session`, {
           paid: true,
         })
-        .then(() => {
-          // toast.success("Responses submitted successfully!");
-          setTimeout(() => {
-            navigate("/results");
-          }, 2000);
-        })
+        // .then(() => {
+        //   setTimeout(() => {
+        //     navigate("/results");
+        //   }, 2000);
+        // })
         .catch((err) => {
           console.error("Failed to update session:", err);
         });
     }
-  }, [isSuccessful]);
+  }, [isSuccessful, storedSessionId]);
+
 
   async function make_payment() {
     try {
       const res = await axios.post("http://127.0.0.1:5000/make_payment", {
         phone_number: phone_number,
-        session_id: Session,
+        session_id: storedSessionId,
       });
 
       if (res.status === 200) {
@@ -145,7 +144,7 @@ function Payment() {
                           body: JSON.stringify({
                             amount: "1",
                             currency: "USD",
-                            session_id: Session,
+                            session_id: storedSessionId,
                           }),
                         }
                       );
@@ -177,7 +176,7 @@ function Payment() {
                             "Content-Type": "application/json",
                           },
                           body: JSON.stringify({
-                            session_id: Session,
+                            session_id: storedSessionId,
                             amount: "1",
                             currency: "USD",
                             transaction_id: details.id,

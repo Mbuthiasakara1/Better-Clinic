@@ -15,7 +15,7 @@ class Session(db.Model):
 
     #relationship
     user=db.relationship('User',back_populates='sessions')
-    payment = db.relationship('Payment', back_populates='session')
+    payment = db.relationship('Payment', back_populates='session', cascade="all, delete")
     responses = db.relationship('Response', back_populates='session', cascade='all, delete-orphan')
 
 
@@ -31,7 +31,6 @@ class Session(db.Model):
 
             question = response.question
             if not question:
-                print(f"Error: No question found for response {response.id}")  
                 continue  
 
             options = json.loads(question.options) 
@@ -61,12 +60,11 @@ class Session(db.Model):
 
     def get_assessment_result(self):
         """Determine severity per category based on percentage scores."""
-        category_scores = self.calculate_scores() 
+        category_scores = self.calculate_scores()
 
         if not category_scores:
             return {"message": "No scores available for this session"}
 
-        # Define severity levels
         severity_levels = {
             "Normal": (0, 39.9),
             "Mild": (40, 59.9),
@@ -74,22 +72,33 @@ class Session(db.Model):
             "Severe": (80, 100),
         }
 
-        # Identify the category with the highest percentage
         highest_category = max(category_scores, key=category_scores.get)
         highest_score = category_scores[highest_category]
 
-        # Determine severity level
         severity = "Unknown"
         for level, (low, high) in severity_levels.items():
             if low <= highest_score <= high:
                 severity = level
                 break
 
+        
+        if severity == "Normal":
+            message = (
+                f"Your {highest_category.lower()} score is {round(highest_score, 1)}%. "
+                "This is within the normal range. You currently show no significant symptoms requiring concern."
+            )
+        else:
+            message = (
+                f"Your {highest_category.lower()} score is {round(highest_score, 1)}%. "
+                f"This indicates {severity.lower()} symptoms of {highest_category.lower()}. "
+                "It is recommended that you consult with a mental health professional for further evaluation and support."
+            )
+
         return {
             "category": highest_category,
             "score": round(highest_score, 1),
             "severity": severity,
-            "message": f"Your {highest_category.lower()} score is {round(highest_score, 1)}%. You have {severity.lower()} {highest_category.lower()} symptoms."
+            "message": message
         }
 
 

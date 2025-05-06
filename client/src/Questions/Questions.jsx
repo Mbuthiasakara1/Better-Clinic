@@ -26,7 +26,6 @@ function Questions() {
   const [animationInstance, setAnimationInstance] = useState(null);
   const navigate = useNavigate();
   const { Session, setSession, user } = useStore();
-  const user_id = localStorage.getItem("user_id");
   const progressRef = useRef(null);
   // Lottie animation setup
 

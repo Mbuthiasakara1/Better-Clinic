@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -31,9 +32,15 @@ function SecondQuestions({ handleResponse }) {
     {
       key: "relationship_status",
       text: "What is your relationship status?",
-      options: ["Single", "In a Relationship", "Married", "Divorced", "Widowed"],
+      options: [
+        "Single",
+        "In a Relationship",
+        "Married",
+        "Divorced",
+        "Widowed",
+      ],
       renderOptions: null,
-    }
+    },
   ];
 
   function renderGenderOptions() {
@@ -41,8 +48,8 @@ function SecondQuestions({ handleResponse }) {
       <div className="grid grid-cols-2 gap-3">
         <button
           className={`group relative overflow-hidden rounded-xl transition-all duration-500 shadow-xl ${
-            formData.gender === "Male" 
-              ? "bg-gradient-to-br from-green-400 to-emerald-700 ring-2 ring-green-300 transform scale-105" 
+            formData.gender === "Male"
+              ? "bg-gradient-to-br from-green-400 to-emerald-700 ring-2 ring-green-300 transform scale-105"
               : "bg-gradient-to-r from-green-500 to-teal-500 hover:from-teal-400 hover:to-green-500"
           }`}
           onClick={() => handleOptionClick("Male")}
@@ -63,17 +70,21 @@ function SecondQuestions({ handleResponse }) {
           </div>
           {formData.gender === "Male" && (
             <div className="absolute bottom-1 right-1 bg-white rounded-full p-1">
-              <svg className="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+              <svg
+                className="w-3 h-3 text-green-600"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
                 <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
               </svg>
             </div>
           )}
         </button>
-        
+
         <button
           className={`group relative overflow-hidden rounded-xl transition-all duration-500 shadow-xl ${
-            formData.gender === "Female" 
-              ? "bg-gradient-to-br from-green-400 to-emerald-700 ring-2 ring-green-300 transform scale-105" 
+            formData.gender === "Female"
+              ? "bg-gradient-to-br from-green-400 to-emerald-700 ring-2 ring-green-300 transform scale-105"
               : "bg-gradient-to-r from-green-500 to-teal-500 hover:from-teal-400 hover:to-green-500"
           }`}
           onClick={() => handleOptionClick("Female")}
@@ -94,17 +105,21 @@ function SecondQuestions({ handleResponse }) {
           </div>
           {formData.gender === "Female" && (
             <div className="absolute bottom-1 right-1 bg-white rounded-full p-1">
-              <svg className="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+              <svg
+                className="w-3 h-3 text-green-600"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
                 <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
               </svg>
             </div>
           )}
         </button>
-        
+
         <button
           className={`group relative overflow-hidden rounded-xl transition-all duration-500 shadow-xl ${
-            formData.gender === "Other" 
-              ? "bg-gradient-to-br from-green-400 to-emerald-700 ring-2 ring-green-300 transform scale-105" 
+            formData.gender === "Other"
+              ? "bg-gradient-to-br from-green-400 to-emerald-700 ring-2 ring-green-300 transform scale-105"
               : "bg-gradient-to-r from-green-500 to-teal-500 hover:from-teal-400 hover:to-green-500"
           }`}
           onClick={() => handleOptionClick("Other")}
@@ -125,17 +140,21 @@ function SecondQuestions({ handleResponse }) {
           </div>
           {formData.gender === "Other" && (
             <div className="absolute bottom-1 right-1 bg-white rounded-full p-1">
-              <svg className="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+              <svg
+                className="w-3 h-3 text-green-600"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
                 <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
               </svg>
             </div>
           )}
         </button>
-        
+
         <button
           className={`group relative overflow-hidden rounded-xl transition-all duration-500 shadow-xl ${
-            formData.gender === "Prefer not to say" 
-              ? "bg-gradient-to-br from-green-400 to-emerald-700 ring-2 ring-green-300 transform scale-105" 
+            formData.gender === "Prefer not to say"
+              ? "bg-gradient-to-br from-green-400 to-emerald-700 ring-2 ring-green-300 transform scale-105"
               : "bg-gradient-to-r from-green-500 to-teal-500 hover:from-teal-400 hover:to-green-500"
           }`}
           onClick={() => handleOptionClick("Prefer not to say")}
@@ -152,11 +171,17 @@ function SecondQuestions({ handleResponse }) {
                 className="h-12 w-12"
               />
             </div>
-            <span className="font-bold text-white drop-shadow-md text-xs">Prefer not to say</span>
+            <span className="font-bold text-white drop-shadow-md text-xs">
+              Prefer not to say
+            </span>
           </div>
           {formData.gender === "Prefer not to say" && (
             <div className="absolute bottom-1 right-1 bg-white rounded-full p-1">
-              <svg className="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+              <svg
+                className="w-3 h-3 text-green-600"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
                 <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
               </svg>
             </div>
@@ -199,22 +224,23 @@ function SecondQuestions({ handleResponse }) {
         formData,
         { withCredentials: true }
       );
-          const userId = userResponse.data.user_id;
-      setUser(userId); 
-
+      const userId = userResponse.data.user_id;
+      setUser(userId);
+      sessionStorage.setItem("user_id", userId)
 
       const sessionResponse = await axios.post(
         "http://127.0.0.1:5000/api/sessions",
         {
-          user_id: userId, 
+          user_id: userId,
           score: 0,
           paid: false,
           result_sent: false,
         }
       );
-      const newSessionId = sessionResponse.data.id; 
-      setSession(newSessionId); 
-      
+      const newSessionId = sessionResponse.data.id;
+      setSession(newSessionId);
+      sessionStorage.setItem("session_id", newSessionId);
+
       // Wait a moment before calling handleResponse to ensure state updates
       setTimeout(() => {
         handleResponse(newSessionId);
@@ -238,7 +264,13 @@ function SecondQuestions({ handleResponse }) {
         {questions[step].text}
       </h2>
 
-      <div className={`transition-all duration-300 ${animating ? 'opacity-0 transform translate-x-8' : 'opacity-100 transform translate-x-0'}`}>
+      <div
+        className={`transition-all duration-300 ${
+          animating
+            ? "opacity-0 transform translate-x-8"
+            : "opacity-100 transform translate-x-0"
+        }`}
+      >
         {questions[step].renderOptions ? (
           questions[step].renderOptions()
         ) : (
@@ -256,27 +288,37 @@ function SecondQuestions({ handleResponse }) {
                 {formData[questions[step].key] === option && (
                   <div className="absolute left-0 top-0 h-full w-1 bg-white"></div>
                 )}
-                
+
                 <div className="flex items-center">
-                  <div className={`flex items-center justify-center mr-3 w-6 h-6 rounded-full transition-all duration-300 ${
-                    formData[questions[step].key] === option 
-                      ? "bg-white" 
-                      : "border-2 border-green-500"
-                  }`}>
+                  <div
+                    className={`flex items-center justify-center mr-3 w-6 h-6 rounded-full transition-all duration-300 ${
+                      formData[questions[step].key] === option
+                        ? "bg-white"
+                        : "border-2 border-green-500"
+                    }`}
+                  >
                     {formData[questions[step].key] === option && (
-                      <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                      <svg
+                        className="w-4 h-4 text-green-600"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
                         <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
                       </svg>
                     )}
                   </div>
-                  
-                  <span className={`font-medium transition-all duration-300 ${
-                    formData[questions[step].key] === option ? "text-white" : "text-green-800"
-                  }`}>
+
+                  <span
+                    className={`font-medium transition-all duration-300 ${
+                      formData[questions[step].key] === option
+                        ? "text-white"
+                        : "text-green-800"
+                    }`}
+                  >
                     {option}
                   </span>
                 </div>
-                
+
                 <div className="absolute inset-0 bg-gradient-to-r from-green-300 to-teal-300 opacity-0 group-hover:opacity-10 transition-opacity"></div>
               </button>
             ))}
@@ -295,8 +337,18 @@ function SecondQuestions({ handleResponse }) {
           disabled={step === 0}
         >
           {step > 0 && (
-            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            <svg
+              className="w-4 h-4 mr-1"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
           )}
           Back
@@ -313,8 +365,18 @@ function SecondQuestions({ handleResponse }) {
         >
           {step === questions.length - 1 ? "Submit" : "Next"}
           {formData[questions[step].key] && step < questions.length - 1 && (
-            <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            <svg
+              className="w-4 h-4 ml-1"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
             </svg>
           )}
         </button>

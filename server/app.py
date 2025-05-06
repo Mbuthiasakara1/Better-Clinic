@@ -1,5 +1,9 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))  
 import base64
 import json
+import traceback
 from flask import Flask,make_response,request,jsonify,session, request
 from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
@@ -13,7 +17,6 @@ from models.payment import Payment
 from models.response import Response
 from models.questions import Question
 from models.admin import Admin
-import os
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import requests
@@ -93,7 +96,17 @@ class RegisterUser(Resource):
             return {"message": "User created", "user_id": new_user.id}, 201
         except Exception as e:
             return {"message": "Error creating user", "error": str(e)}, 500
-  
+
+class UserById(Resource):
+    def get(self, id):
+        user = User.query.filter_by(id=id).first()
+        if not user:
+            return {"message": "User not found"}, 404
+        
+        response = make_response(jsonify(user.to_dict()))
+         
+        return response
+      
 class GetSessionUser(Resource):
     def get(self):
         user_id = session.get("user_id") 
@@ -111,16 +124,6 @@ class GetSessionUser(Resource):
             "relationship_status": user.relationship_status,
         }, 200
 
-
-class UserById(Resource):
-    def get(self, id):
-        user = User.query.filter_by(id=id).first()
-        if not user:
-            return {"message": "User not found"}, 404
-        
-        response = make_response(jsonify(user.to_dict()))
-         
-        return response
 
 class AdminRegister(Resource):
     def post(self):
@@ -277,7 +280,20 @@ class SessionById(Resource):
 
         return {"message": "Session updated", "session_id": session.id, "paid": session.paid}, 200
 
+    def delete(self, session_id):
+        session = db.session.get(Session, session_id)
 
+        if not session:
+            return {"message": "Session not found"}, 404
+
+        try:
+            db.session.delete(session)
+            db.session.commit()
+            return {"message": "Session deleted successfully"}, 200
+        except Exception as e:
+            db.session.rollback()
+            return {"message": f"An error occurred: {str(e)}"}, 500
+        
 @app.route("/pay", methods=["POST"])
 def pay():
     try:
@@ -310,7 +326,6 @@ def pay():
         return jsonify(order_response)
     
     except Exception as e:
-        print("PayPal Order Creation Error:", str(e))
         return jsonify({"error": str(e)}), 500
 
 @app.route("/pay/confirm", methods=["POST"])
@@ -325,7 +340,6 @@ def confirm_paypal_payment():
         payment_date = datetime.utcnow()
 
         if not session_id or not transaction_id:
-            print("Missing fields:", session_id, transaction_id)
             return jsonify({"error": "Missing session_id or transaction_id"}), 400
 
         # Find the existing pending payment
@@ -360,7 +374,6 @@ def confirm_paypal_payment():
         return jsonify({"message": "Payment recorded successfully"})
 
     except Exception as e:
-        print("Payment Confirmation Error:", str(e))
         return jsonify({"error": str(e)}), 500
 
 @app.route("/admin/stats")
@@ -417,7 +430,6 @@ def fetch_access_token():
     consumer_secret = os.getenv('CONSUMER_SECRET')
     
     if not consumer_key or not consumer_secret:
-        print("Missing consumer credentials")
         return None
     
     credentials = f"{consumer_key}:{consumer_secret}"
@@ -430,9 +442,8 @@ def fetch_access_token():
         response = requests.get(url, headers=headers)
         if response.status_code == 200:
             return response.json().get("access_token")
-        print("Failed to get token:", response.text)
     except Exception as e:
-        print("Error fetching access token:", e)
+        return f"Error fetching access token:", e
     return None
 
 # ---------------------------
@@ -450,74 +461,52 @@ def get_access_token():
 # ---------------------------
 @app.route('/make_payment', methods=['POST'])
 def payment_prompt():
-    # Fetch a fresh access token for each request
-    access_token = fetch_access_token()
-    if not access_token:
-        return jsonify({"error": "Failed to retrieve access token"}), 500
-   
-    # Validate token is not empty
-    if not access_token.strip():
-        return jsonify({"error": "Retrieved access token is empty"}), 500
-   
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': f'Bearer {access_token}'
-    }
-   
     try:
+        access_token = fetch_access_token()
+        if not access_token:
+            return jsonify({"error": "Failed to retrieve access token"}), 500
+
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {access_token}'  
+        }
+
         data = request.get_json()
-        if not data:
-            return jsonify({"error": "No JSON data received"}), 400
-           
         phone_number = data.get("phone_number")
         session_id = data.get("session_id")
-       
+
         if not phone_number or not session_id:
             return jsonify({"error": "Phone number and session ID are required"}), 400
-       
-        
+
         timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
         passkey = os.getenv("passkey")
-
-        if not passkey:
-            return jsonify({"error": "Missing M-Pesa passkey in environment variables"}), 500
-           
-        shortcode = os.getenv("BUSINESS_SHORT_CODE", "5552258")
-       
-        # Generate password using the correct format
+        shortcode = "5552258"
+        
         data_to_encode = shortcode + passkey + timestamp
         password = base64.b64encode(data_to_encode.encode()).decode('utf-8')
-       
-        callback_url = os.getenv("CALLBACK_URL", "https://2af2-197-237-161-26.ngrok-free.app/callback_payment")
-       
+
         payload = {
             "BusinessShortCode": shortcode,
             "Password": password,
             "Timestamp": timestamp,
-            "TransactionType": "CustomerBuyGoodsOnline", 
+            "TransactionType": "CustomerPayBillOnline", 
             "Amount": 1,
             "PartyA": phone_number,
-            "PartyB": shortcode,  # Use shortcode as PartyB
+            "PartyB": shortcode,
             "PhoneNumber": phone_number,
-            "CallBackURL": callback_url,
+            "CallBackURL": "https://6730-197-237-161-183.ngrok-free.app/callback_payment",
             "AccountReference": "ROYAL ASSETS LIMITED",
             "TransactionDesc": "Payment of health awareness"
         }
-       
-        # Using the production URL for live environment
-        url = " https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
-       
-       
+
+        url = "https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
         response = requests.post(url, headers=headers, json=payload, timeout=30)
-        
-       
         res_data = response.json()
-       
+
         transaction_id = res_data.get("CheckoutRequestID")
         if not transaction_id:
             return jsonify({"error": "No CheckoutRequestID received"}), 500
-       
-        # Save to database
+
         new_payment = Payment(
             session_id=session_id,
             amount=1,
@@ -526,18 +515,19 @@ def payment_prompt():
             status="pending",
             created_at=datetime.utcnow()
         )
-       
+
         db.session.add(new_payment)
         db.session.commit()
-       
+
         return jsonify(res_data)
-       
+
     except requests.exceptions.HTTPError as e:
         return jsonify({"error": f"HTTP error occurred: {str(e)}"}), 500
     except requests.exceptions.RequestException as e:
         return jsonify({"error": f"Network error: {str(e)}"}), 500
     except Exception as e:
         return jsonify({"error": f"Unexpected error: {str(e)}"}), 500
+
 
 # ---------------------------
 # Route: Callback URL
@@ -549,9 +539,6 @@ def payment_callback():
     result = data.get("Body", {}).get("stkCallback", {})
     result_code = result.get("ResultCode")
     transaction_id = result.get("CheckoutRequestID")
-
-    print("🧾 ResultCode:", result_code)
-    print("🧾 Transaction ID from callback:", transaction_id)
 
     # Attempt to find the matching payment in the DB
     payment = Payment.query.filter_by(transaction_id=transaction_id).first()
@@ -567,9 +554,8 @@ def payment_callback():
             value = item.get("Value")
             if name:
                 payment_data[name] = value
-        print("Parsed CallbackMetadata:", payment_data)
     except Exception as e:
-        print("Error parsing CallbackMetadata:", e)
+        return f"Error parsing CallbackMetadata:", e
 
     # Update payment record
     try:
@@ -588,10 +574,9 @@ def payment_callback():
                     parsed_date = datetime.strptime(txn_date, "%Y%m%d%H%M%S")
                     payment.payment_date = parsed_date
                 except Exception as date_error:
-                    print("Date parsing error:", date_error)
+                    return f"Date parsing error:", date_error
 
         else:
-            print("Transaction failed with ResultCode:", result_code)
             payment.status = "failed"
 
         # Ensure SQLAlchemy tracks changes
