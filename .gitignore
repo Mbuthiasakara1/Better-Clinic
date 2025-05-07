@@ -1,3 +1,5 @@
-/server/instance
-/server/migrations
-server/.env
+.env
+instance/
+migrations/
+__pycache__/
+*.pyc
