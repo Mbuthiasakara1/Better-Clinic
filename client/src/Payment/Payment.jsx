@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+
 import { MuiTelInput } from "mui-tel-input";
 import React, { useEffect, useState } from "react";
 import useStore from "../../Store";
@@ -7,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-import FlashMessage from "./Flashmessages";
 
 function Payment() {
   const [phone_number, setPhoneNumber] = useState("");
@@ -20,7 +20,7 @@ function Payment() {
 
   const validatePhone = () => {
     if (!phone_number || phone_number.length < 10) {
-      alert("Invalid phone number! Please enter a valid one.");
+      toast.error("Invalid phone number! Please enter a valid one.");
       return false;
     }
     return true;
@@ -41,12 +41,20 @@ function Payment() {
         .patch(`http://127.0.0.1:5000/api/${storedSessionId}/session`, {
           paid: true,
         })
+        .then(() => {
+          toast.success("Payment successful! Redirecting to results...");
+          setTimeout(() => {
+            navigate("/results");
+          }, 2000);
+        })
 
         .catch((err) => {
+          console.error("Failed to update session:", err);
+          toast.error("Failed to update payment status. Please try again.");
           toast.error("Failed to update session:", err);
         });
     }
-  }, [isSuccessful, storedSessionId]);
+  }, [isSuccessful, Session, navigate]);
 
   async function make_payment() {
     try {
@@ -84,18 +92,6 @@ function Payment() {
       toast.error("M-Pesa payment failed. Try again.");
       setHasError(true);
     }
-  }
-
-  if (isSuccessful) {
-    return (
-      <FlashMessage type="success" onAction={() => navigate("/results")} />
-    );
-  }
-
-  if (hasError) {
-    return (
-      <FlashMessage type="error" onAction={() => window.location.reload()} />
-    );
   }
 
   return (
@@ -272,10 +268,17 @@ function Payment() {
               </div>
             )}
           </div>
+          
+          <div className="mt-6 pt-4 border-t border-gray-200">
+            <p className="text-xs text-gray-500">
+              Your payment is secure and processed by our trusted payment partners.
+              By continuing, you agree to our Terms of Service and Privacy Policy.
+            </p>
+          </div>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default Payment;
