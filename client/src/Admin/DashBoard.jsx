@@ -21,6 +21,7 @@ function DashBoard({ theme, toggleTheme, handleLogout }) {
   const [paymentStats, setPaymentStats] = useState([]);
   const [sessionStats, setSessionStats] = useState([]);
   const [categorySeverityData, setCategorySeverityData] = useState([]);
+  const [sessionTable, setSessionTable] = useState([]);
 
   useEffect(() => {
     axios.get("http://127.0.0.1:5000/admin/stats").then((res) => {
@@ -40,6 +41,9 @@ function DashBoard({ theme, toggleTheme, handleLogout }) {
       );
       setCategorySeverityData(severityList);
     });
+     axios.get("http://127.0.0.1:5000/admin/session-table").then((res) => {
+       setSessionTable(res.data);
+     });
   }, []);
 
   return (
@@ -49,6 +53,63 @@ function DashBoard({ theme, toggleTheme, handleLogout }) {
         toggleTheme={toggleTheme}
         handleLogout={handleLogout}
       />
+      <div className="bg-white rounded-2xl p-6 shadow-md mt-8 overflow-x-auto">
+        <h2 className="text-xl font-semibold mb-4">Detailed Session Table</h2>
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="px-4 py-2 text-left text-xs font-medium">
+                Session ID
+              </th>
+              <th className="px-4 py-2 text-left text-xs font-medium">User</th>
+              <th className="px-4 py-2 text-left text-xs font-medium">
+                Gender
+              </th>
+              <th className="px-4 py-2 text-left text-xs font-medium">Age</th>
+              <th className="px-4 py-2 text-left text-xs font-medium">
+                Status
+              </th>
+              <th className="px-4 py-2 text-left text-xs font-medium">
+                Severity
+              </th>
+              <th className="px-4 py-2 text-left text-xs font-medium">Score</th>
+              <th className="px-4 py-2 text-left text-xs font-medium">Paid</th>
+              <th className="px-4 py-2 text-left text-xs font-medium">
+                Receipt
+              </th>
+              <th className="px-4 py-2 text-left text-xs font-medium">
+                Phone/Email Address
+              </th>
+              <th className="px-4 py-2 text-left text-sm">Amount</th>
+              <th className="px-4 py-2 text-left text-xs font-medium">Date</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {sessionTable.map((row) => (
+              <tr key={row.session_id}>
+                <td className="px-4 py-2 text-sm">{row.session_id}</td>
+                <td className="px-4 py-2 text-sm">{row.user_id}</td>
+                <td className="px-4 py-2 text-sm">{row.gender}</td>
+                <td className="px-4 py-2 text-sm">{row.age_group}</td>
+                <td className="px-4 py-2 text-sm">{row.relationship_status}</td>
+                <td className="px-4 py-2 text-sm">{row.severity}</td>
+                <td className="px-4 py-2 text-sm">{row.score ?? "N/A"}</td>
+                <td className="px-4 py-2 text-sm">{row.paid ? "Yes" : "No"}</td>
+                <td className="px-4 py-2 text-sm">{row.receipt}</td>
+                <td className="px-4 py-2 text-sm">{row.phone || row.email}</td>
+                <td className="px-4 py-2 text-sm">
+                  {row.currency === "USD"
+                    ? `$${Number(row.amount).toFixed(2)}`
+                    : `KSh${Number(row.amount).toFixed(0)}`}
+                </td>
+
+                <td className="px-4 py-2 text-sm">{row.date}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
       <div className="p-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="bg-white rounded-2xl p-6 shadow-md">
