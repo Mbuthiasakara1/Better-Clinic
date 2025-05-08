@@ -171,10 +171,10 @@ function Questions() {
               <h2 className="text-1xl font-semibold text-green-700">{`${
                 currentQuestionIndex + 1
               } of ${questions.length}`}</h2>
-              <h2 className="text-2xl font-semibold text-green-800 mb-6 leading relaxed">
+              <h2 className="text-2xl font-semibold text-green-800 mb-6 ">
                 {questions[currentQuestionIndex].question_text}
               </h2>
-              <div className="flex flex-col space-y-3">
+              <div className="flex flex-col space-y-3 overflow-y-auto">
                 {questions[currentQuestionIndex]?.options?.map(
                   (option, index) => (
                     <button

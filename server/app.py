@@ -1,5 +1,6 @@
 import sys
 import os
+import time
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))  
 import base64
 import json
@@ -53,7 +54,7 @@ CORS(app,
      resources={r"/*": {
          "origins": [
              "http://localhost:5173",
-             "https://k7dnhlpm-5173.uks1.devtunnels.ms"
+             "https://fd69-102-214-16-38.ngrok-free.app"
          ]
      }},
      allow_headers=["Content-Type", "Authorization"],

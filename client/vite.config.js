@@ -9,5 +9,9 @@ export default defineConfig({
 ],
   json:{
     stringify:true,
-  }
+  },
+  server: {
+  allowedHosts:['fd69-102-214-16-38.ngrok-free.app']
+}
+
 })

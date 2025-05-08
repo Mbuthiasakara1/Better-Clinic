@@ -3,8 +3,8 @@ import App from "./src/App";
 import Questions from "./src/Questions/Questions";
 import Payment from "./src/Payment/Payment";
 import AdminDashboard from "./src/Admin/AdminDashboard";
-import Results from "./src/Results/Results";
 import Interactive from "./src/Questions/Interactive";
+import Results from "./src/Results/Results";
 
 const routes = createBrowserRouter([
     {

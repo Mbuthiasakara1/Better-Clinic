@@ -91,7 +91,7 @@ class Session(db.Model):
             message = (
                 f"Your {highest_category.lower()} score is {round(highest_score, 1)}%. "
                 f"This indicates {severity.lower()} symptoms of {highest_category.lower()}. "
-                "It is recommended that you consult with a mental health professional for further evaluation and support."
+                
             )
 
         return {
