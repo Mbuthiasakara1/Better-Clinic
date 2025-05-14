@@ -29,6 +29,7 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///usichizi.db'
+# app.config['SQLALCHEMY_DATABASE_URI']=os.getenv("DATABASE")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] =False
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] =True
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
@@ -54,6 +55,7 @@ CORS(app,
      resources={r"/*": {
          "origins": [
              "http://localhost:5173",
+             "http://localhost:5174",
              "https://fd69-102-214-16-38.ngrok-free.app"
          ]
      }},
@@ -75,6 +77,8 @@ class RegisterUser(Resource):
     def get(self):
         users=User.query.all()
         return {"users": [user.to_dict() for user in users]}
+    
+
     
     def post(self):
         try:
@@ -378,6 +382,14 @@ def confirm_paypal_payment():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route("/api/check-payment/<int:session_id>", methods=["GET"])
+def check_payment(session_id):
+    session = Session.query.get(session_id)
+    if not session:
+        return jsonify({"paid": False, "message": "Session not found"}), 404
+        
+    return jsonify({"paid": session.paid})    
 
 @app.route("/admin/stats")
 def admin_stats():

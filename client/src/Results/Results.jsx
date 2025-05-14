@@ -1,4 +1,5 @@
 
+
 import React, { useEffect, useState } from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
@@ -6,6 +7,7 @@ import { RefreshCw, Share2, Heart, Brain } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import ShareButtons from "./Sharesection";
 
 const Results = () => {
   const [percentage, setPercentage] = useState(0);
@@ -240,15 +242,15 @@ const Results = () => {
   }, [navigate]);
 
   return (
-    <div className="relative w-full h-screen flex items-center justify-center px-4 md:px-10 lg:px-20 text-gray-900 dark:text-white overflow-hidden">
+    <div className="relative w-full h-screen flex items-center justify-center px-4 md:px-10 lg:px-20 py-10 text-gray-900 dark:text-white overflow-hidden ">
       <img
-        className="absolute w-full h-full object-cover opacity-100"
+        className="absolute inset-0 w-full h-full object-cover opacity-100 -z-10"
         src="/assets/bg.jpeg"
         alt="Background"
       />
 
       {isLoading ? (
-        <div className="bg-white shadow-2xl rounded-3xl p-8 max-w-md w-full text-center border-2 border-green-300 flex flex-col justify-center z-20 animate-pulse">
+        <div className="bg-white shadow-2xl rounded-3xl p-8  max-w-md w-full text-center border-2 border-green-300 flex flex-col justify-center z-20 animate-pulse">
           <div className="w-32 h-32 mx-auto">
             <CircularProgressbar
               value={percentage}
@@ -329,29 +331,28 @@ const Results = () => {
           {/* Retake button */}
           <button
             onClick={() => (window.location.href = "/")}
-            className="bg-blue-600 text-white font-semibold px-5 py-2 rounded-xl hover:bg-blue-700 transition mx-auto mb-4 flex items-center"
+            className="bg-blue-600 text-white font-semibold px-5 py-2 rounded-xl hover:bg-blue-700 transition mx-auto mb-2 flex items-center "
           >
             Take Test Again <RefreshCw className="ml-2 w-4 h-4" />
           </button>
 
           {/* Share Section */}
-          <div className="flex items-center justify-center space-x-2 mb-2">
+          {/* <div className="flex items-center justify-center space-x-2 mb-2">
             <Share2 className="w-4 h-4 text-gray-600" />
             <h3 className="text-sm font-semibold text-gray-700">
               Share your results
             </h3>
-          </div>
+          </div> */}
 
           {/* Share buttons */}
-          <div className="grid grid-cols-2 gap-2">
-            {shareOptions.map((option, index) => (
-              <button
-                key={index}
-                className={`${option.bgColor} ${option.hoverColor} text-white px-3 py-2 rounded-xl transition text-xs font-medium flex items-center justify-center`}
-              >
-                {option.name}
-              </button>
-            ))}
+          <div className=" ">
+          <ShareButtons 
+            results={{ 
+              severity: resultType, // Make sure resultType is properly normalized
+              category: "Mental Health",
+              score: score
+            }} 
+          />
           </div>
 
           {/* Footer Note */}
