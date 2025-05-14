@@ -1,0 +1,24 @@
+on:
+    push:
+      branches:
+        - main
+  
+name: Deploy Website to cPanel on Push  
+jobs:
+    web-deploy:
+      name: Deploy Website
+      runs-on: ubuntu-latest
+  
+      steps:
+        # Checkout the repository
+        - name: Checkout Code
+          uses: actions/checkout@v4
+  
+        # Sync files via FTP
+        - name: Sync Files via FTP
+          uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+          with:
+            server: ${{ secrets.FTP_SERVER }}
+            username: ${{ secrets.FTP_USER }}
+            password: ${{ secrets.FTP_PASSWORD }}
+            exclude: .git,README.md,node_modules/, .env
