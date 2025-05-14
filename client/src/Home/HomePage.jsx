@@ -26,7 +26,11 @@ function HomePage() {
       <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-[90%] md:w-[70%] lg:w-[50%] text-center px-8 py-10">
         {/* Title with stronger text effect */}
         <h1 className="w-full text-5xl md:text-6xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-teal-300 to-emerald-400 tracking-tight mb-2 drop-shadow-lg animate-pulse-slow">
+<<<<<<< HEAD
           USICHIZI
+=======
+        USICHIZI
+>>>>>>> 9bc450affef144e919a0a9266b9230380527eda4
         </h1>
         
         {/* Description with better contrast */}

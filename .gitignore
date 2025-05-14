@@ -4,5 +4,6 @@ migrations/
 __pycache__/
 *.pyc
 
-server/.env
+
 client/.env
+client/node_modules
