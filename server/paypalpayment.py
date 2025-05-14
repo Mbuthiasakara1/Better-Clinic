@@ -10,7 +10,7 @@ load_dotenv()
 
 PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID")
 PAYPAL_CLIENT_SECRET = os.getenv("PAYPAL_CLIENT_SECRET")
-PAYPAL_API_URL ="https://api.sandbox.paypal.com"
+PAYPAL_API_URL ="https://api-m.paypal.com"
 
 # Get OAuth2 Access Token
 def fetch_access_token():

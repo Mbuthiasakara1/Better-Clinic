@@ -5,8 +5,7 @@ import { RefreshCw, Share2, Heart, Brain } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import ShareSection from "./Sharesection";
-
+import ShareButtons from "./Sharesection";
 const Results = () => {
   const [percentage, setPercentage] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -187,34 +186,60 @@ const Results = () => {
     }
   };
 
-  
-
   // Prevent back navigation
   useEffect(() => {
     window.history.pushState({ page: "results" }, "", "");
   }, []);
 
-  useEffect(() => {
-    const handlePopState = async () => {
-      const session_id = sessionStorage.getItem("session_id");
-      const user_id = sessionStorage.getItem("user_id")
+  // useEffect(() => {
+  //   const handlePopState = async () => {
+  //     const session_id = sessionStorage.getItem("session_id");
+  //     const user_id = sessionStorage.getItem("user_id")
 
-      if (session_id && user_id) {
-        try {
-          await axios.post(
-            `http://127.0.0.1:5000/api/sessions/${session_id}/invalidate`
-          );
-          sessionStorage.removeItem("session_id");
-          sessionStorage.removeItem("user_id");
-        } catch (err) {
-          console.error("Failed to invalidate session:", err);
-        }
+  //     if (session_id && user_id) {
+  //       try {
+  //         await axios.post(
+  //           `http://127.0.0.1:5000/api/sessions/${session_id}/invalidate`
+  //         );
+  //         sessionStorage.removeItem("session_id");
+  //         sessionStorage.removeItem("user_id");
+  //       } catch (err) {
+  //         console.error("Failed to invalidate session:", err);
+  //       }
+  //     }
+
+  //     window.history.pushState({ page: "results" }, "", "");
+  //     navigate("/", { replace: true });
+  //   };
+
+  //   window.addEventListener("popstate", handlePopState);
+
+  //   return () => {
+  //     window.removeEventListener("popstate", handlePopState);
+  //   };
+  // }, [navigate]);
+
+  const handlePopState = async () => {
+    const session_id = sessionStorage.getItem("session_id");
+    const user_id = sessionStorage.getItem("user_id");
+
+    if (session_id && user_id) {
+      try {
+        await axios.post(
+          `http://127.0.0.1:5000/api/sessions/${session_id}/invalidate`
+        );
+        sessionStorage.removeItem("session_id");
+        sessionStorage.removeItem("user_id");
+      } catch (err) {
+        console.error("Failed to invalidate session:", err);
       }
+    }
 
-      window.history.pushState({ page: "results" }, "", "");
-      navigate("/", { replace: true });
-    };
+    window.history.pushState({ page: "results" }, "", "");
+    navigate("/home", { replace: true });
+  };
 
+  useEffect(() => {
     window.addEventListener("popstate", handlePopState);
 
     return () => {
@@ -222,124 +247,118 @@ const Results = () => {
     };
   }, [navigate]);
 
-
   return (
-    <div className="relative w-full h-screen flex items-center justify-center px-4 md:px-10 lg:px-20 text-gray-900 dark:text-white overflow-hidden">
+    <div className="relative min-h-screen flex items-center justify-center px-4 py-6 text-gray-900 dark:text-white overflow-hidden">
       <img
-        className="absolute w-full h-full object-cover opacity-100"
+        className="absolute inset-0 w-full h-full object-cover opacity-100"
         src="/assets/bg.jpeg"
         alt="Background"
       />
 
-      {isLoading ? (
-        <div className="bg-white shadow-2xl rounded-3xl p-8 max-w-md w-full text-center border-2 border-green-300 flex flex-col justify-center z-20 animate-pulse">
-          <div className="w-32 h-32 mx-auto">
-            <CircularProgressbar
-              value={percentage}
-              text={`${Math.round(percentage)}%`}
-              styles={buildStyles({
-                textColor: "#4CAF50",
-                pathColor: "#4CAF50",
-                trailColor: "#d6d6d6",
-              })}
-            />
-          </div>
-          <h2 className="text-xl font-semibold text-gray-700 mt-4">
-            Analyzing your responses...
-          </h2>
-          <p className="text-gray-500 mt-2 text-sm">
-            Preparing your personalized results
-          </p>
-        </div>
-      ) : error ? (
-        <div className="bg-white shadow-2xl rounded-3xl p-8 max-w-md w-full text-center border-2 border-red-300 flex flex-col justify-center z-20">
-          <div className="text-red-500 mb-4">
-            <RefreshCw className="w-16 h-16 mx-auto" />
-          </div>
-          <h2 className="text-xl font-semibold text-gray-700">Error</h2>
-          <p className="text-gray-600 mt-2">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="mt-6 bg-blue-600 text-white px-6 py-2 rounded-xl hover:bg-blue-700 transition mx-auto flex items-center"
-          >
-            Try Again <RefreshCw className="ml-2 w-4 h-4" />
-          </button>
-        </div>
-      ) : (
-        <div className="bg-white shadow-2xl rounded-3xl p-4 md:p-4 max-w-md md:max-w-lg w-full text-center border-2 border-green-300 flex flex-col justify-center z-20 transition-all duration-500 ease-in-out">
-          {/* Header */}
-          <div className="flex items-center justify-center space-x-2 mb-3">
-            {getResultIcon()}
-            <h2 className="text-xl font-bold text-green-600">Your Results</h2>
-          </div>
-
-          {/* Badge */}
-          <div
-            className={`${getScoreColor()} mx-auto px-3 py-1 rounded-full text-xs font-medium inline-block mb-3 border ${getBadgeStyle()}`}
-          >
-            {getMessageType()}
-          </div>
-
-          {/* Circular Progress */}
-          <div className="w-24 h-24 mx-auto mb-3">
-            <CircularProgressbar
-              value={score}
-              text={`${Math.round(score)}%`}
-              styles={buildStyles({
-                textColor: getProgressColor(),
-                pathColor: getProgressColor(),
-                trailColor: "#e5e7eb",
-              })}
-            />
-          </div>
-
-          {/* Main Message */}
-          <div className="bg-gray-50 rounded-2xl p-4 shadow-inner mt-1 mb-4">
-            <p className={`${getScoreColor()} text-base font-semibold mb-2`}>
-              {message}
-            </p>
-
-            {/* Recommendations */}
-            <div className="mt-3 text-left text-sm text-gray-600 bg-white p-3 rounded-xl">
-              <h3 className="font-bold text-gray-800 mb-1">Recommendations:</h3>
-              <ul className="list-disc list-inside space-y-1">
-                {getRecommendations().map((recommendation, index) => (
-                  <li key={index}>{recommendation}</li>
-                ))}
-              </ul>
+      <div className="relative z-20 w-full max-w-sm sm:max-w-md md:max-w-lg mx-auto">
+        {isLoading ? (
+          <div className="bg-white shadow-2xl rounded-2xl p-6 sm:p-6 md:p-8 text-center border border-green-300 animate-pulse">
+            <div className="w-24 h-24 sm:w-28 sm:h-28 mx-auto mb-2">
+              <CircularProgressbar
+                value={percentage}
+                text={`${Math.round(percentage)}%`}
+                styles={buildStyles({
+                  textColor: "#4CAF50",
+                  pathColor: "#4CAF50",
+                  trailColor: "#d6d6d6",
+                })}
+              />
             </div>
+            <h2 className="text-base sm:text-lg font-semibold mt-2">
+              Analyzing your responses...
+            </h2>
+            <p className="text-gray-500 text-sm mt-1">
+              Preparing your personalized results
+            </p>
           </div>
-
-          {/* Retake button */}
-          <button
-            onClick={() => (window.location.href = "/")}
-            className="bg-blue-600 text-white font-semibold px-5 py-2 rounded-xl hover:bg-blue-700 transition mx-auto mb-4 flex items-center"
-          >
-            Take Test Again <RefreshCw className="ml-2 w-4 h-4" />
-          </button>
-
-          {/* Share Section */}
-          <div className="flex items-center justify-center space-x-2 mb-2">
-            <Share2 className="w-4 h-4 text-gray-600" />
-            <h3 className="text-sm font-semibold text-gray-700">
-              Share your results
-            </h3>
+        ) : error ? (
+          <div className="bg-white shadow-2xl rounded-2xl p-6 sm:p-6 md:p-8 text-center border border-red-300">
+            <div className="text-red-500 mb-3">
+              <RefreshCw className="w-14 h-14 mx-auto" />
+            </div>
+            <h2 className="text-lg font-semibold">Error</h2>
+            <p className="text-gray-600 mt-1 text-sm">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="mt-4 bg-blue-600 text-white px-5 py-2 rounded-xl hover:bg-blue-700 flex items-center justify-center mx-auto"
+            >
+              Try Again <RefreshCw className="ml-2 w-4 h-4" />
+            </button>
           </div>
+        ) : (
+          <div className="bg-white shadow-2xl rounded-2xl p-5 sm:p-6 md:p-8 text-center border border-green-300">
+            <div className="flex items-center justify-center space-x-2 mb-2">
+              {getResultIcon()}
+              <h2 className="text-lg font-bold text-green-600">Your Results</h2>
+            </div>
 
-          {/* Share buttons */}
-          <div className="grid grid-cols-1 gap-2">
-            <ShareSection />
+            <div
+              className={`${getScoreColor()} mx-auto px-3 py-1 rounded-full text-xs font-medium inline-block mb-2 border ${getBadgeStyle()}`}
+            >
+              {getMessageType()}
+            </div>
+
+            <div className="w-20 h-20 mx-auto mb-2">
+              <CircularProgressbar
+                value={score}
+                text={`${Math.round(score)}%`}
+                styles={buildStyles({
+                  textColor: getProgressColor(),
+                  pathColor: getProgressColor(),
+                  trailColor: "#e5e7eb",
+                })}
+              />
+            </div>
+
+            <div className="bg-gray-50 rounded-2xl p-3 shadow-inner mt-1 mb-3">
+              <p className={`${getScoreColor()} text-sm font-semibold mb-1`}>
+                {message}
+              </p>
+              <div className="mt-2 text-left text-sm text-gray-700 bg-white p-3 rounded-xl">
+                <h3 className="font-bold text-gray-800 mb-1">
+                  Recommendations:
+                </h3>
+                <ul className="list-disc list-inside space-y-1">
+                  {getRecommendations().map((rec, i) => (
+                    <li key={i}>{rec}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <button
+              onClick={() => handlePopState()}
+              className="bg-blue-600 text-white font-semibold px-4 py-2 rounded-xl hover:bg-blue-700 transition mb-3 flex items-center justify-center mx-auto"
+            >
+              Take Test Again <RefreshCw className="ml-2 w-4 h-4" />
+            </button>
+
+            <div className="flex items-center justify-center space-x-2 mb-1">
+              <Share2 className="w-4 h-4 text-gray-600" />
+              <h3 className="text-sm font-semibold text-gray-700">
+                Share your results
+              </h3>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <ShareButtons results={message} />
+            </div>
+
+            <p className="text-gray-500 text-[10px] mt-3">
+              This assessment is not a clinical diagnosis. Please consult a
+              healthcare professional for proper medical advice.
+            </p>
           </div>
-
-          {/* Footer Note */}
-          <p className="text-gray-500 text-[10px] mt-4">
-            This assessment is not a clinical diagnosis. Please consult a
-            healthcare professional for proper medical advice.
-          </p>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
+
 };
 
 export default Results;

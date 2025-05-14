@@ -3,3 +3,6 @@ instance/
 migrations/
 __pycache__/
 *.pyc
+
+server/.env
+client/.env

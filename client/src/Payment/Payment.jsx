@@ -54,6 +54,7 @@ function Payment() {
   }, [isSuccessful, storedSessionId, navigate]);
 
   async function make_payment() {
+    toast.success("Check your phone for a prompt")
     try {
       const res = await axios.post(
         "http://127.0.0.1:5000/make_payment",
@@ -204,7 +205,6 @@ function Payment() {
                       try {
                         const details = await actions.order.capture();
                         const email = details?.payer?.email_address;
-                        console.log("Payer email:", email);
 
                         
                         const response = await fetch(

@@ -37,24 +37,11 @@ app.config['SESSION_COOKIE_SECURE'] =  True
 app.config['SESSION_PERMANENT'] = False
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)
 
-
-# CORS(app, supports_credentials=True, resources={
-#     r"/*": {
-#         "origins": [
-#             "http://localhost:5173",
-#             "https://k7dnhlpm-5173.uks1.devtunnels.ms/"
-#         ],
-#         "allow_headers": ["Content-Type", "Authorization"],
-#         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-#     }
-# })
-
 CORS(app,
      supports_credentials=True,
      resources={r"/*": {
          "origins": [
-             "http://localhost:5173",
-             "https://fd69-102-214-16-38.ngrok-free.app"
+             "http://localhost:5173"
          ]
      }},
      allow_headers=["Content-Type", "Authorization"],
@@ -577,6 +564,7 @@ class MpesaGateWay:
         data = payload["data"]
         amount = data["amount"]
         phone_number = data["phone_number"]
+     
         reference = data["reference"]
         description = data["description"]
 
@@ -665,11 +653,8 @@ def payment_prompt():
         }
 
         data = request.get_json()
-        print("recieved data from input", data)
         phone_number = re.sub(r'\D', '', data.get("phone_number"))
         session_id = data.get("session_id")
-        print("Parsed phone_number:", phone_number)
-        print("Parsed session_id:", session_id)
 
         if not phone_number or not session_id:
             return jsonify({"error": "Phone number and session ID are required"}), 400
@@ -700,10 +685,7 @@ def payment_prompt():
         }
 
         url = "https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
-        # print("Sending payload:", json.dumps(payload, indent=2))
         response = requests.post(url, headers=headers, json=payload, timeout=30)
-        # print("Safaricom API response status:", response.status_code)
-        # print("Safaricom API response text:", response.text)
         res_data = response.json()
 
         transaction_id = res_data.get("CheckoutRequestID")
@@ -814,7 +796,7 @@ def payment_status():
 
         # Return the payment status in the response
         return jsonify({
-            "status": payment.status,  # The current status of the payment (e.g., "pending", "completed", "failed")
+            "status": payment.status, 
             "amount": payment.amount,
             "currency": payment.currency,
             "transaction_id": payment.transaction_id,

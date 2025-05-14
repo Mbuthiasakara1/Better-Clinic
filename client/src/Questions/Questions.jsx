@@ -126,7 +126,7 @@ function Questions() {
         session_id: currentSessionId,
         responses: responses,
       });
-      navigate("/interactive");
+      navigate("/congratulations");
     } catch (error) {
       toast.error("Error submitting responses:", error);
     }
