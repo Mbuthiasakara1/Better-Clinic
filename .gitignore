@@ -6,4 +6,4 @@ __pycache__/
 
 
 client/.env
-client/node_modules
+client/node_modules/
