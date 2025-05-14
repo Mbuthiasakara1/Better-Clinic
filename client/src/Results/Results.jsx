@@ -189,28 +189,7 @@ const Results = () => {
     }
   };
 
-  const shareOptions = [
-    {
-      name: "Copy Link",
-      bgColor: "bg-gray-700",
-      hoverColor: "hover:bg-gray-800",
-    },
-    {
-      name: "Share on Twitter",
-      bgColor: "bg-blue-400",
-      hoverColor: "hover:bg-blue-500",
-    },
-    {
-      name: "Share on Facebook",
-      bgColor: "bg-blue-600",
-      hoverColor: "hover:bg-blue-700",
-    },
-    {
-      name: "Email Results",
-      bgColor: "bg-red-500",
-      hoverColor: "hover:bg-red-600",
-    },
-  ];
+  
 
   // Prevent back navigation
   useEffect(() => {
@@ -220,13 +199,17 @@ const Results = () => {
   useEffect(() => {
     const handlePopState = async () => {
       const session_id = sessionStorage.getItem("session_id");
+      const user_id = sessionStorage.getItem("user_id")
 
-      if (session_id) {
+      if (session_id && user_id) {
         try {
-          await axios.delete(`http://127.0.0.1:5000/api/${session_id}/session`);
+          await axios.post(
+            `http://127.0.0.1:5000/api/sessions/${session_id}/invalidate`
+          );
           sessionStorage.removeItem("session_id");
+          sessionStorage.removeItem("user_id");
         } catch (err) {
-          console.error("Failed to delete session:", err);
+          console.error("Failed to invalidate session:", err);
         }
       }
 
@@ -240,6 +223,7 @@ const Results = () => {
       window.removeEventListener("popstate", handlePopState);
     };
   }, [navigate]);
+
 
   return (
     <div className="relative w-full h-screen flex items-center justify-center px-4 md:px-10 lg:px-20 py-10 text-gray-900 dark:text-white overflow-hidden ">

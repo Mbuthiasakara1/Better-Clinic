@@ -25,7 +25,7 @@ function Questions() {
   });
   const navigate = useNavigate();
   const { Session } = useStore();
-  
+
   // Fetch questions from API
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -47,88 +47,90 @@ function Questions() {
       .catch((error) => {
         setIsSuccessful(false);
         setIsLoading(true); // Keep loading animation if API fails
-        
       });
     return () => clearTimeout(timer);
   }, []);
 
- // Reset selected option when moving to a new question
- useEffect(() => {
-   setSelectedOption(null);
- }, [currentQuestionIndex]);
- const getButtonStyles = (index, isSelected) => {
-   const styles = [
-     {
-       selected: "bg-blue-500 text-white",
-       unselected: "border-blue-500 hover:bg-blue-500",
-     },
-     {
-       selected: "bg-yellow-500 text-white",
-       unselected: "border-yellow-500 hover:bg-yellow-500",
-     },
-     {
-       selected: "bg-purple-500 text-white",
-       unselected: "border-purple-500 hover:bg-purple-500",
-     },
-     {
-       selected: "bg-green-500 text-white",
-       unselected: "border-green-500 hover:bg-green-500",
-     },
-   ];
-   const style = styles[index % styles.length];
-   return isSelected ? style.selected : style.unselected;
- };
- const handleOptionClick = (index) => {
-   const selectedQuestion = questions[currentQuestionIndex];
-   setSelectedOption(index);
-   setFormData({
-     ...formData,
-     session_id: Session,
-     question_id: selectedQuestion.id,
-     response_value: selectedQuestion.options[index].text,
-   });
-   // Append new response instead of replacing existing ones
-   setResponses((prevResponses) => [
-     ...prevResponses,
-     {
-       question_id: selectedQuestion.id,
-       selected_option: selectedQuestion.options[index].text,
-     },
-   ]);
- };
- const handleNextQuestion = async () => {
-   if (currentQuestionIndex === questions.length - 1) {
-     setShowFinalStep(true);
-   } else {
-    const nextIndex =currentQuestionIndex + 1
-    setCurrentQuestionIndex(nextIndex)
-    setSelectedOption(null)
+  // Reset selected option when moving to a new question
+  useEffect(() => {
+    setSelectedOption(null);
+  }, [currentQuestionIndex]);
 
-    
-   }
- };
- const handleMoveBack = () => {
-   if (currentQuestionIndex > 0) {
-    const prevIndex =currentQuestionIndex -1
-     setCurrentQuestionIndex((prevIndex) => prevIndex - 1);
-     setSelectedOption(null);
-   }
- };
- async function handleResponse(sessionId) {
-   const currentSessionId = sessionId || Session;
-   if (!currentSessionId) {
-     return;
-   }
-   try {
-     await axios.post("http://127.0.0.1:5000/api/responses", {
-       session_id: currentSessionId,
-       responses: responses,
-     });
-     navigate('/interactive')
-   } catch (error) {
-     toast.error("Error submitting responses:", error);
-   }
- }
+  const getButtonStyles = (index, isSelected) => {
+    const styles = [
+      {
+        selected: "bg-blue-500 text-white",
+        unselected: "border-blue-500 hover:bg-blue-500",
+      },
+      {
+        selected: "bg-yellow-500 text-white",
+        unselected: "border-yellow-500 hover:bg-yellow-500",
+      },
+      {
+        selected: "bg-purple-500 text-white",
+        unselected: "border-purple-500 hover:bg-purple-500",
+      },
+      {
+        selected: "bg-green-500 text-white",
+        unselected: "border-green-500 hover:bg-green-500",
+      },
+    ];
+    const style = styles[index % styles.length];
+    return isSelected ? style.selected : style.unselected;
+  };
+
+  const handleOptionClick = (index) => {
+    const selectedQuestion = questions[currentQuestionIndex];
+    setSelectedOption(index);
+    setFormData({
+      ...formData,
+      session_id: Session,
+      question_id: selectedQuestion.id,
+      response_value: selectedQuestion.options[index].text,
+    });
+    // Append new response instead of replacing existing ones
+    setResponses((prevResponses) => [
+      ...prevResponses,
+      {
+        question_id: selectedQuestion.id,
+        selected_option: selectedQuestion.options[index].text,
+      },
+    ]);
+  };
+
+  const handleNextQuestion = async () => {
+    if (currentQuestionIndex === questions.length - 1) {
+      setShowFinalStep(true);
+    } else {
+      const nextIndex = currentQuestionIndex + 1;
+      setCurrentQuestionIndex(nextIndex);
+      setSelectedOption(null);
+    }
+  };
+
+  const handleMoveBack = () => {
+    if (currentQuestionIndex > 0) {
+      const prevIndex = currentQuestionIndex - 1;
+      setCurrentQuestionIndex(prevIndex);
+      setSelectedOption(null);
+    }
+  };
+
+  async function handleResponse(sessionId) {
+    const currentSessionId = sessionId || Session;
+    if (!currentSessionId) {
+      return;
+    }
+    try {
+      await axios.post("http://127.0.0.1:5000/api/responses", {
+        session_id: currentSessionId,
+        responses: responses,
+      });
+      navigate("/interactive");
+    } catch (error) {
+      toast.error("Error submitting responses:", error);
+    }
+  }
 
   return (
     <div className="relative w-screen h-screen flex items-center justify-center px-4 md:px-10 lg:px-20 text-gray-900 dark:text-white overflow-hidden">
@@ -142,7 +144,7 @@ function Questions() {
       <div className="absolute w-full h-full bg-black/40"></div>
 
       <div className="absolute left-1/2 transform -translate-x-1/2 w-[90%] md:w-[70%] lg:w-[60%] text-center px-4 py-10 bg-opacity-50 z-10 h-full rounded-3xl flex justify-center items-center p-4">
-        <div className="bg-white shadow-xl rounded-3xl p-8 max-w-md w-full text-center  flex flex-col justify-center">
+        <div className="bg-white shadow-xl rounded-3xl p-8 max-w-md w-full text-center flex flex-col justify-center">
           {showSecondQuestions ? (
             <SecondQuestions handleResponse={handleResponse} />
           ) : showFinalStep ? (
@@ -158,7 +160,25 @@ function Questions() {
               </button>
             </>
           ) : isloading ? (
-            <div className=" w-24 h-24 flex justify-center items-center"></div>
+            <div className="flex flex-col items-center justify-center">
+              <div
+                className="w-32 h-32"
+                ref={(ref) => {
+                  if (ref) {
+                    lottie.loadAnimation({
+                      container: ref,
+                      renderer: "svg",
+                      loop: true,
+                      autoplay: true,
+                      animationData: loader,
+                    });
+                  }
+                }}
+              />
+              <p className="mt-4 text-gray-700 text-sm">
+                Fetching questions...
+              </p>
+            </div>
           ) : !isSuccessful ? (
             <div className="flex flex-col items-center justify-center">
               <div className="container w-24 h-24"></div>
@@ -252,7 +272,7 @@ function Questions() {
                       )}
                   </button>
                 </div>
-                </div>
+              </div>
             </>
           ) : null}
         </div>

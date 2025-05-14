@@ -300,6 +300,16 @@ class SessionById(Resource):
         except Exception as e:
             db.session.rollback()
             return {"message": f"An error occurred: {str(e)}"}, 500
+
+
+@app.route("/api/sessions/<session_id>/invalidate", methods=["POST"])
+def invalidate_session(session_id):
+    session = Session.query.filter_by(id=session_id).first()
+    if session:
+        session.is_active = False
+        db.session.commit()
+        return jsonify({"message": "Session invalidated"})
+    return jsonify({"error": "Session not found"}), 404
         
 @app.route("/pay", methods=["POST"])
 def pay():
@@ -341,9 +351,10 @@ def confirm_paypal_payment():
         data = request.get_json()
 
         session_id = data.get("session_id")
-        amount = data.get("amount", "100.00")
-        currency = data.get("currency", "KES")
+        amount = data.get("amount")
+        currency = data.get("currency")
         transaction_id = data.get("transaction_id")  
+        email_address=data.get("email_address")
         payment_date = datetime.utcnow()
 
         if not session_id or not transaction_id:
@@ -360,6 +371,7 @@ def confirm_paypal_payment():
             existing_payment.transaction_id = transaction_id
             existing_payment.status = "completed"
             existing_payment.payment_date = payment_date
+            existing_payment.email_address = email_address
             db.session.commit()
 
             return jsonify({"message": "Payment confirmed and updated successfully"})
@@ -370,6 +382,7 @@ def confirm_paypal_payment():
             amount=amount,
             currency=currency,
             transaction_id=transaction_id,
+            email_address=email_address,
             status="completed",
             payment_date=payment_date,
             created_at=datetime.utcnow()
@@ -435,6 +448,39 @@ def admin_stats():
     except Exception as e:
         return jsonify({"error": str(e)}), 500 
     
+@app.route("/admin/session-table")
+def session_table():
+    try:
+        sessions = Session.query.join(User).outerjoin(Payment).all()
+        session_data = []
+        for sess in sessions:
+            user = sess.user
+            payment = sess.payment[0] if sess.payment else None
+            result = sess.get_assessment_result()
+
+            session_data.append({
+                "session_id": sess.id,
+                "user_id": user.id,
+                "gender": user.gender,
+                "age_group": user.age_group,
+                "relationship_status": user.relationship_status,
+                "score": sess.score,
+                "severity": result.get("severity") if result else "N/A",
+                "category": result.get("category") if result else "N/A",
+                "paid": sess.paid,
+                "payment_status": payment.status if payment else "No Payment",
+                "receipt": payment.transaction_id if payment else "N/A",
+                "amount": float(payment.amount) if payment else 0.00,
+                "currency": payment.currency if payment else "KES",
+                "phone": payment.phone_number if payment else "N/A",
+                "email": payment.email_address if payment else "N/A",
+                "date": payment.payment_date.strftime("%Y-%m-%d %H:%M:%S") if payment and payment.payment_date else "N/A"
+            })
+
+        return jsonify(session_data)
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 class MpesaGateWay:
@@ -745,6 +791,10 @@ def payment_callback():
                     payment.payment_date = parsed_date
                 except Exception as date_error:
                     return f"Date parsing error:", date_error
+            
+            phone_number = payment_data.get("PhoneNumber")
+            if phone_number:
+                payment.phone_number = phone_number    
 
         else:
             payment.status = "failed"
