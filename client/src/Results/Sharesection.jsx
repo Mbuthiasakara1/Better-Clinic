@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { Copy, X, Share2, Download, Clipboard } from "lucide-react";
+import toast from "react-hot-toast";
 
 // Custom TikTok icon with brand colors
 const TikTokIcon = () => (
@@ -326,7 +327,7 @@ This is a screening tool to support your mental health journey. Professional gui
   const handleWebShare = () => {
     navigator
       .share({ title: "My Mental Health Results", text: fullMessage, url: window.location.origin })
-      .catch(console.error);
+      .catch(toast.error);
   };
 
   const handleImageDownload = () => {
@@ -361,7 +362,7 @@ This is a screening tool to support your mental health journey. Professional gui
       
       alert("Image copied to clipboard! You can now paste it directly.");
     } catch (err) {
-      console.error("Failed to copy image:", err);
+      toast.error("Failed to copy image:", err);
       alert("Couldn't copy image to clipboard. Please try downloading instead.");
     }
   };
@@ -372,10 +373,10 @@ This is a screening tool to support your mental health journey. Professional gui
   return (
    
     <div className="w-full max-w-3xl ">
-      <h3 className="text-lg font-semibold text-center mb-1 text-gray-700">Share Your Results</h3>
+      <h3 className="text-lg font-semibold text-center  mb-1 text-gray-700">Share Your Results</h3>
       
-      <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="bg-white rounded-xl shadow-md  border border-gray-100">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
           {/* Copy Link */}
           <button
             onClick={handleCopyLink}
@@ -452,7 +453,7 @@ This is a screening tool to support your mental health journey. Professional gui
           )}
         </div>
         
-        <p className="text-xs text-center text-gray-500 mt-6">
+        <p className="text-xs text-center text-gray-500 mt-2">
           Sharing your experience helps break stigma around mental health
         </p>
       </div>
@@ -469,7 +470,7 @@ This is a screening tool to support your mental health journey. Professional gui
               <X className="w-5 h-5" />
             </button>
             
-            <div className="flex items-center justify-center mb-6">
+            <div className="flex items-center justify-center mb-2">
               <div className={`w-10 h-10 rounded-full flex items-center justify-center mr-3 ${activeTab === "instagram" ? "bg-gradient-to-tr from-pink-500 to-purple-500" : "bg-black"}`}>
                 {activeTab === "instagram" ? <InstagramIcon /> : <TikTokIcon />}
               </div>
@@ -478,7 +479,7 @@ This is a screening tool to support your mental health journey. Professional gui
               </h3>
             </div>
             
-            <div className="flex mb-6">
+            <div className="flex mb-2">
               <button 
                 onClick={() => setActiveTab("instagram")}
                 className={`flex-1 py-2 text-center ${activeTab === "instagram" ? "border-b-2 border-pink-500 text-pink-600 font-medium" : "text-gray-500"}`}
@@ -493,7 +494,7 @@ This is a screening tool to support your mental health journey. Professional gui
               </button>
             </div>
             
-            <div className="mb-6 bg-blue-50 rounded-lg p-4 border-l-4 border-blue-400">
+            <div className="mb-2 bg-blue-50 rounded-lg p-4 border-l-4 border-blue-400">
               {activeTab === "instagram" ? (
                 <div className="text-gray-700 text-sm">
                   <p className="font-medium text-blue-800 mb-2">Share to your Instagram</p>
