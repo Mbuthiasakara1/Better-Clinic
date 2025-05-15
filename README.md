@@ -1,0 +1,2 @@
+# 🧠 Usichizi Mental App
+**Usichizi** is a mental health screening and support app designed to promote early detection and self-awareness. The name “Usichizi” – Swahili for "Don't go mad" – challenges the stigma surrounding mental health and encourages users to seek clarity and care without fear or shame

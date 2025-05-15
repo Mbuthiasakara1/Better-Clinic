@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState } from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
@@ -194,55 +192,27 @@ const Results = () => {
     window.history.pushState({ page: "results" }, "", "");
   }, []);
 
-  // useEffect(() => {
-  //   const handlePopState = async () => {
-  //     const session_id = sessionStorage.getItem("session_id");
-  //     const user_id = sessionStorage.getItem("user_id")
-
-  //     if (session_id && user_id) {
-  //       try {
-  //         await axios.post(
-  //           `http://127.0.0.1:5000/api/sessions/${session_id}/invalidate`
-  //         );
-  //         sessionStorage.removeItem("session_id");
-  //         sessionStorage.removeItem("user_id");
-  //       } catch (err) {
-  //         console.error("Failed to invalidate session:", err);
-  //       }
-  //     }
-
-  //     window.history.pushState({ page: "results" }, "", "");
-  //     navigate("/", { replace: true });
-  //   };
-
-  //   window.addEventListener("popstate", handlePopState);
-
-  //   return () => {
-  //     window.removeEventListener("popstate", handlePopState);
-  //   };
-  // }, [navigate]);
-
-  const handlePopState = async () => {
-    const session_id = sessionStorage.getItem("session_id");
-    const user_id = sessionStorage.getItem("user_id");
-
-    if (session_id && user_id) {
-      try {
-        await axios.post(
-          `http://127.0.0.1:5000/api/sessions/${session_id}/invalidate`
-        );
-        sessionStorage.removeItem("session_id");
-        sessionStorage.removeItem("user_id");
-      } catch (err) {
-        console.error("Failed to invalidate session:", err);
-      }
-    }
-
-    window.history.pushState({ page: "results" }, "", "");
-    navigate("/home", { replace: true });
-  };
-
   useEffect(() => {
+    const handlePopState = async () => {
+      const session_id = sessionStorage.getItem("session_id");
+      const user_id = sessionStorage.getItem("user_id");
+
+      if (session_id && user_id) {
+        try {
+          await axios.post(
+            `http://127.0.0.1:5000/api/sessions/${session_id}/invalidate`
+          );
+          sessionStorage.removeItem("session_id");
+          sessionStorage.removeItem("user_id");
+        } catch (err) {
+          console.error("Failed to invalidate session:", err);
+        }
+      }
+
+      window.history.pushState({ page: "results" }, "", "");
+      navigate("/", { replace: true });
+    };
+
     window.addEventListener("popstate", handlePopState);
 
     return () => {
@@ -293,77 +263,84 @@ const Results = () => {
           </button>
         </div>
       ) : (
-        <div className="bg-white shadow-2xl rounded-3xl p-4 md:p-4 max-w-md md:max-w-lg w-full text-center border-2 border-green-300 flex flex-col justify-center z-20 transition-all duration-500 ease-in-out">
+        <div className="bg-white shadow-xl rounded-2xl p-4 sm:p-5 w-full max-w-md sm:max-w-lg mx-auto text-center border border-green-300 flex flex-col justify-center z-20 transition-all duration-300 ease-in-out">
           {/* Header */}
-          <div className="flex items-center justify-center space-x-2 mb-3">
+          <div className="flex items-center justify-center space-x-2 mb-1">
             {getResultIcon()}
-            <h2 className="text-xl font-bold text-green-600">Your Results</h2>
+            <h2 className="text-lg sm:text-xl font-bold text-green-600">
+              Your Results
+            </h2>
           </div>
 
-            <div
-              className={`${getScoreColor()} mx-auto px-3 py-1 rounded-full text-xs font-medium inline-block mb-2 border ${getBadgeStyle()}`}
+          {/* Badge */}
+          <div
+            className={`${getScoreColor()} mx-auto px-3 py-1 rounded-full text-xs font-medium mb-2 border ${getBadgeStyle()}`}
+          >
+            {getMessageType()}
+          </div>
+
+          {/* Circular Progress */}
+          <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-1">
+            <CircularProgressbar
+              value={score}
+              text={`${Math.round(score)}%`}
+              styles={buildStyles({
+                textColor: getProgressColor(),
+                pathColor: getProgressColor(),
+                trailColor: "#e5e7eb",
+              })}
+            />
+          </div>
+
+          {/* Main Message */}
+          <div className="bg-gray-50 rounded-xl p-3 sm:p-4 shadow-inner mb-1">
+            <p
+              className={`${getScoreColor()} text-sm sm:text-base font-semibold `}
             >
-              {getMessageType()}
-            </div>
+              {message}
+            </p>
 
-            <div className="w-20 h-20 mx-auto mb-2">
-              <CircularProgressbar
-                value={score}
-                text={`${Math.round(score)}%`}
-                styles={buildStyles({
-                  textColor: getProgressColor(),
-                  pathColor: getProgressColor(),
-                  trailColor: "#e5e7eb",
-                })}
-              />
+            {/* Recommendations */}
+            <div className="mt-1 text-left text-sm text-gray-600 bg-white p-3 rounded-lg">
+              <h3 className="font-semibold text-gray-800 mb-1">
+                Recommendations:
+              </h3>
+              <ul className="list-disc list-inside space-y-1">
+                {getRecommendations().map((recommendation, index) => (
+                  <li key={index}>{recommendation}</li>
+                ))}
+              </ul>
             </div>
-
-            <div className="bg-gray-50 rounded-2xl p-3 shadow-inner mt-1 mb-3">
-              <p className={`${getScoreColor()} text-sm font-semibold mb-1`}>
-                {message}
-              </p>
-              <div className="mt-2 text-left text-sm text-gray-700 bg-white p-3 rounded-xl">
-                <h3 className="font-bold text-gray-800 mb-1">
-                  Recommendations:
-                </h3>
-                <ul className="list-disc list-inside space-y-1">
-                  {getRecommendations().map((rec, i) => (
-                    <li key={i}>{rec}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+          </div>
 
           {/* Retake button */}
           <button
             onClick={() => (window.location.href = "/")}
-            className="bg-blue-600 text-white font-semibold px-5 py-2 rounded-xl hover:bg-blue-700 transition mx-auto mb-2 flex items-center "
+            className="bg-blue-600 text-white text-sm sm:text-base font-semibold px-4 py-2 rounded-lg hover:bg-blue-700 transition mb-1 flex items-center justify-center mx-auto"
           >
             Take Test Again <RefreshCw className="ml-2 w-4 h-4" />
           </button>
 
-
           {/* Share buttons */}
-          <div className=" ">
-          <ShareButtons 
-            results={{ 
-              severity: resultType,
-              category: "Mental Health",
-              score: score
-            }} 
-          />
+          <div className="mb-1">
+            <ShareButtons
+              results={{
+                severity: resultType,
+                category: "Mental Health",
+                score: score,
+              }}
+            />
           </div>
 
-            <p className="text-gray-500 text-[10px] mt-3">
-              This assessment is not a clinical diagnosis. Please consult a
-              healthcare professional for proper medical advice.
-            </p>
-          </div>
-        )}
-      </div>
-
+          {/* Footer Note */}
+          <p className="text-gray-400 text-[10px] leading-tight">
+            This assessment is not a clinical diagnosis. Please consult a
+            healthcare professional for proper medical advice.
+          </p>
+        </div>
+      )}
+    </div>
   );
-
 };
 
 export default Results;
